@@ -3,8 +3,7 @@
 
 **Космос.Rus** — это образовательно-новостной портал, посвященный российской космонавтике. Платформа объединяет актуальные новости космической отрасли, интерактивные тесты для проверки знаний, систему геймификации (уровни, достижения, ежедневные серии) и профориентационный раздел для молодежи. Проект интегрирован с нейросетью **GigaChat** для автоматического сжатия новостей.
 
-![Версия Python](https://img.shields.io/badge/Python-3.9+-blue)
-![Лицензия](https://img.shields.io/badge/License-MIT-green)
+![Версия Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.1.3-red)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.48-blue)
 
