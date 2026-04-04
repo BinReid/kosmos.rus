@@ -1,0 +1,17 @@
+#loader {
+    transition: opacity 0.8s ease;
+}
+#loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+#loader.force-hidden {
+    display: none !important;
+}
+.content-wrapper {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.content-wrapper.visible {
+    opacity: 1;
+}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="cosmos-card p-4">
+            <div class="row">
+                {% if university.get_image() %}
+                <div class="col-md-4">
+                    <img src="{{ university.get_image() }}" class="university-detail-image" alt="{{ university.name }}">
+                </div>
+                <div class="col-md-8">
+                {% else %}
+                <div class="col-12">
+                {% endif %}
+                    <h2>{{ university.name }}</h2>
+                    <div class="university-info">
+                        <p>
+                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>{{ university.city }}
+                        </p>
+                        {% if university.website %}
+                        <p>
+                            <i class="fas fa-globe me-2 text-danger"></i>
+                            <a href="{{ university.website }}" target="_blank" class="university-website">{{ university.website }}</a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="border-secondary">
+            
+            <div class="vacancy-detail-section">
+                <h4><i class="fas fa-info-circle text-danger me-2"></i>Описание</h4>
+                <p>{{ university.description }}</p>
+            </div>
+            
+            <div class="vacancy-detail-section">
+                <h4><i class="fas fa-graduation-cap text-danger me-2"></i>Специальности</h4>
+                <ul class="specialties-list">
+                    {% for specialty in university.get_specialties_list() %}
+                    <li>
+                        <i class="fas fa-check-circle text-success"></i>
+                        {{ specialty }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="text-center mt-4 pt-3 border-top border-secondary">
+                <a href="{{ url_for('career.universities') }}" class="btn btn-outline-cosmos">
+                    <i class="fas fa-arrow-left me-2"></i>Вернуться к списку ВУЗов
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

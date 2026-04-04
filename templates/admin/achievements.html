@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-trophy text-danger me-2"></i>
+        Управление достижениями
+    </h2>
+    <a href="{{ url_for('admin.achievement_add') }}" class="btn btn-cosmos">
+        <i class="fas fa-plus me-2"></i>Добавить достижение
+    </a>
+</div>
+
+<div class="cosmos-card p-4">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Иконка</th>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Тип условия</th>
+                    <th>Значение</th>
+                    <th>Награда</th>
+                    <th>Цвет</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ach in achievements %}
+                <tr style="background: linear-gradient(135deg, 
+                    {% if ach.color == 'gold' %}#ffd70020, #ffb34720{% 
+                    elif ach.color == 'silver' %}#c0c0c020, #a0a0a020{% 
+                    elif ach.color == 'bronze' %}#cd7f3220, #b8733320{% 
+                    else %}#e5e4e220, #b0b0b020{% endif %});">
+                    <td>{{ ach.id }}</td>
+                    <td><span class="fs-2">{{ ach.icon }}</span></td>
+                    <td><strong>{{ ach.name }}</strong></td>
+                    <td>{{ ach.description }}</td>
+                    <td>
+                        {% if ach.condition_type == 'registration' %}
+                            <span class="badge bg-info">Регистрация</span>
+                        {% elif ach.condition_type == 'news_read' %}
+                            <span class="badge bg-primary">Чтение новостей</span>
+                        {% elif ach.condition_type == 'tests_passed' %}
+                            <span class="badge bg-success">Прохождение тестов</span>
+                        {% elif ach.condition_type == 'streak' %}
+                            <span class="badge bg-warning">Серия посещений</span>
+                        {% elif ach.condition_type == 'perfect_test' %}
+                            <span class="badge bg-danger">Идеальный тест</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ ach.condition_value }}</td>
+                    <td><span class="badge bg-success">{{ ach.points_reward }} очков</span></td>
+                    <td>
+                        <span class="badge" style="background: {{ 
+                            '#ffd700' if ach.color == 'gold' else 
+                            '#c0c0c0' if ach.color == 'silver' else 
+                            '#cd7f32' if ach.color == 'bronze' else 
+                            '#e5e4e2' 
+                        }}; color: #000;">
+                            {{ ach.color }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin.achievement_edit', achievement_id=ach.id) }}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{{ url_for('admin.achievement_delete', achievement_id=ach.id) }}" class="btn btn-sm btn-danger" 
+                           onclick="return confirm('Удалить достижение «{{ ach.name }}»? Это действие нельзя отменить!')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="cosmos-card p-4">
+        <h4 class="mb-3">
+            <i class="fas fa-info-circle text-danger me-2"></i>
+            Информация о типах достижений
+        </h4>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    <li><span class="badge bg-info me-2">Регистрация</span> - Выдаётся при регистрации</li>
+                    <li><span class="badge bg-primary me-2">Чтение новостей</span> - За прочтение определённого количества новостей</li>
+                    <li><span class="badge bg-success me-2">Прохождение тестов</span> - За прохождение определённого количества тестов</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    <li><span class="badge bg-warning me-2">Серия посещений</span> - За ежедневные посещения сайта</li>
+                    <li><span class="badge bg-danger me-2">Идеальный тест</span> - За прохождение теста на 100%</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

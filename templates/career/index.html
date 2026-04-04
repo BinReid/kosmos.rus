@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-briefcase text-danger me-2"></i>
+                Карьера в космической отрасли
+            </h2>
+            <p class="lead mt-3">
+                Путь к звёздам начинается здесь! Узнайте о профессиях, обучении и возможностях.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        
+        <!-- LEFT -->
+        <div class="col-lg-8">
+
+            <div class="cosmos-card mb-4">
+                <h3 class="mb-4">
+                    <i class="fas fa-compass text-danger me-2"></i>
+                    Направления карьеры
+                </h3>
+
+                <div class="row g-4">  <!-- Изменено: добавлен класс g-4 для отступов между карточками -->
+                    {% for direction in directions %}
+                    <div class="col-md-6 d-flex">  <!-- Изменено: добавлен класс d-flex для одинаковой высоты карточек -->
+                        <div class="card h-100 w-100">  <!-- Изменено: добавлен класс w-100 для полной ширины внутри колонки -->
+                            <div class="card-icon">{{ direction.icon | safe }}</div>
+                            <h4>{{ direction.title }}</h4>
+                            <p>
+                                {{ direction.description[:120] }}
+                                {% if direction.description|length > 120 %}...{% endif %}
+                            </p>
+
+                            <a href="{{ url_for('career.direction_detail', direction_id=direction.id) }}"
+                               class="btn btn-outline-cosmos w-100 mt-auto">
+                                Подробнее <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12">
+                        <div class="empty-state text-center">
+                            <i class="fas fa-info-circle fa-2x mb-3"></i>
+                            <h4>Направления скоро появятся</h4>
+                            <p>Скоро здесь будет контент</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="cosmos-card text-center">
+                <h3 class="mb-4">
+                    <i class="fas fa-graduation-cap text-danger me-2"></i>
+                    Ведущие ВУЗы
+                </h3>
+
+                <a href="{{ url_for('career.universities') }}" class="btn btn-cosmos">
+                    Смотреть все ВУЗы
+                </a>
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="col-lg-4">
+
+            {% if show_vacancies %}
+            <div class="cosmos-card mb-4 text-center">
+                <h4 class="mb-3">
+                    <i class="fas fa-bullhorn text-danger me-2"></i>
+                    Вакансии
+                </h4>
+
+                <a href="{{ url_for('career.vacancies') }}" class="btn btn-outline-cosmos w-100">
+                    Смотреть
+                </a>
+            </div>
+            {% else %}
+            <div class="cosmos-card mb-4 text-center">
+                <i class="fas fa-lock fa-2x mb-3"></i>
+                <h5>Раздел вакансий</h5>
+                <p>Доступ с 18 лет</p>
+                <small>Ваш возраст: {{ user.age }}</small>
+            </div>
+            {% endif %}
+
+            <div class="cosmos-card">
+                <h4 class="mb-4">
+                    <i class="fas fa-info-circle text-danger me-2"></i>
+                    Как стать космонавтом?
+                </h4>
+
+                <ul class="timeline">
+                    <li>Высшее образование</li>
+                    <li>Опыт работы</li>
+                    <li>Подача заявки</li>
+                    <li>Медкомиссия</li>
+                    <li>Подготовка</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

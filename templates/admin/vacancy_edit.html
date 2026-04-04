@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2 class="mb-4">
+    <i class="fas fa-edit text-danger me-2"></i>
+    Редактировать вакансию: {{ vacancy.title }}
+</h2>
+
+<div class="cosmos-card p-4">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.title.label }}</label>
+                {{ form.title(class="form-control") }}
+                {% if form.title.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.title.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.company.label }}</label>
+                {{ form.company(class="form-control") }}
+                {% if form.company.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.company.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.description.label }}</label>
+            {{ form.description(class="form-control", rows="5") }}
+            {% if form.description.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.description.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.requirements.label }}</label>
+            {{ form.requirements(class="form-control", rows="5") }}
+            {% if form.requirements.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.requirements.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">{{ form.salary_min.label }}</label>
+                {{ form.salary_min(class="form-control", type="number") }}
+                {% if form.salary_min.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.salary_min.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">{{ form.salary_max.label }}</label>
+                {{ form.salary_max(class="form-control", type="number") }}
+                {% if form.salary_max.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.salary_max.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">{{ form.location.label }}</label>
+                {{ form.location(class="form-control") }}
+                {% if form.location.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.location.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.contact_email.label }}</label>
+                {{ form.contact_email(class="form-control", type="email") }}
+                {% if form.contact_email.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.contact_email.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small>Email для отклика на вакансию</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">{{ form.expires_at.label }}</label>
+                {{ form.expires_at(class="form-control", type="date") }}
+                {% if form.expires_at.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.expires_at.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small>Дата, до которой вакансия активна</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="form-check mt-4 pt-2">
+                    {{ form.is_active(class="form-check-input") }}
+                    <label class="form-check-label">{{ form.is_active.label }}</label>
+                </div>
+                <small>Если снять галочку, вакансия не будет отображаться пользователям</small>
+            </div>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Информация:</strong>
+            <ul class="mb-0 mt-2">
+                <li>Вакансия создана: {{ vacancy.created_at.strftime('%d.%m.%Y %H:%M') }}</li>
+                <li>ID вакансии: {{ vacancy.id }}</li>
+            </ul>
+        </div>
+        
+        <div class="text-end mt-4">
+            <a href="{{ url_for('admin.admin_vacancies') }}" class="btn btn-secondary">Отмена</a>
+            <button type="submit" class="btn btn-cosmos">Сохранить изменения</button>
+        </div>
+    </form>
+</div>
+</div>
+{% endblock %}

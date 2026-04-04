@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="cosmos-card p-4 text-center">
+            <div class="mb-3">
+                {% if user.get_avatar() %}
+                    <img src="{{ user.get_avatar() }}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #d32f2f, #b71c1c); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-astronaut fa-3x"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <h4>{{ user.username }}</h4>
+            <p>{{ user.email }}</p>
+            <a href="{{ url_for('profile.profile') }}" class="btn btn-outline-cosmos btn-sm">
+                <i class="fas fa-arrow-left me-1"></i>Вернуться в профиль
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="cosmos-card p-4 mb-4">
+            <h4 class="mb-4">
+                <i class="fas fa-user-edit text-danger me-2"></i>
+                Настройки профиля
+            </h4>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="update_profile" value="1">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    <label class="form-label">{{ form.username.label }}</label>
+                    {{ form.username(class="form-control") }}
+                    {% if form.username.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.username.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">{{ form.email.label }}</label>
+                    {{ form.email(class="form-control") }}
+                    {% if form.email.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">{{ form.avatar.label }}</label>
+                    {{ form.avatar(class="form-control", accept="image/*") }}
+                    {% if form.avatar.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.avatar.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <small>Рекомендуемый размер: 200x200 пикселей</small>
+                </div>
+                
+                {% if user.get_avatar() %}
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="remove_avatar" id="remove_avatar" value="1" class="form-check-input">
+                    <label class="form-check-label" for="remove_avatar">Удалить текущий аватар</label>
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-cosmos">Сохранить изменения</button>
+            </form>
+        </div>
+        
+        <div class="cosmos-card p-4">
+            <h4 class="mb-4">
+                <i class="fas fa-key text-danger me-2"></i>
+                Смена пароля
+            </h4>
+            <form method="POST">
+                <input type="hidden" name="change_password" value="1">
+                {{ password_form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    <label class="form-label">{{ password_form.current_password.label }}</label>
+                    {{ password_form.current_password(class="form-control") }}
+                    {% if password_form.current_password.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in password_form.current_password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">{{ password_form.new_password.label }}</label>
+                    {{ password_form.new_password(class="form-control") }}
+                    {% if password_form.new_password.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in password_form.new_password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">{{ password_form.confirm_new_password.label }}</label>
+                    {{ password_form.confirm_new_password(class="form-control") }}
+                    {% if password_form.confirm_new_password.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in password_form.confirm_new_password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="btn btn-outline-cosmos">Сменить пароль</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

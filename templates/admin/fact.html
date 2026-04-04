@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2 class="mb-4">
+    <i class="fas fa-star-of-life text-danger me-2"></i>
+    Редактировать факт дня
+</h2>
+
+<div class="cosmos-card p-4">
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.fact.label }}</label>
+            {{ form.fact(class="form-control", rows="5", placeholder="Введите интересный факт о космосе...") }}
+            {% if form.fact.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.fact.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Текущее изображение</label>
+            {% if fact and fact.get_image() %}
+            <div class="mt-2 mb-3">
+                <img src="{{ fact.get_image() }}" style="max-height: 200px; border-radius: 10px;">
+            </div>
+            {% else %}
+            <div class="alert alert-secondary">Изображение отсутствует</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.image.label }}</label>
+            {{ form.image(class="form-control", accept="image/*", id="imageInput") }}
+            <div id="imagePreview" class="mt-2" style="display: none;">
+                <img id="preview" style="max-height: 200px; border-radius: 10px;">
+                <p class="small mt-1">Новое изображение будет сохранено в базе данных</p>
+            </div>
+            {% if form.image.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.image.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <small>Оставьте пустым, чтобы сохранить текущее изображение</small>
+        </div>
+        
+        <div class="text-end">
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Назад</a>
+            <button type="submit" class="btn btn-cosmos">Сохранить</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('preview').src = event.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('imagePreview').style.display = 'none';
+    }
+});
+</script>
+</div>
+{% endblock %}

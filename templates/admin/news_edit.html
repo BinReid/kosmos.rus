@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2 class="mb-4">
+    <i class="fas fa-edit text-danger me-2"></i>
+    Редактировать новость
+</h2>
+
+<div class="cosmos-card p-4">
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.title.label }}</label>
+            {{ form.title(class="form-control") }}
+            {% if form.title.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.title.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.content.label }}</label>
+            {{ form.content(class="form-control", rows="10") }}
+            {% if form.content.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.content.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Текущее изображение</label>
+            {% if news.get_image() %}
+            <div class="mt-2 mb-3">
+                <img src="{{ news.get_image() }}" style="max-height: 200px; border-radius: 10px;" id="currentImage">
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" name="remove_image" id="remove_image" value="1" class="form-check-input">
+                <label class="form-check-label text-danger" for="remove_image">Удалить текущее изображение</label>
+            </div>
+            {% else %}
+            <div class="alert alert-secondary">Изображение отсутствует</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.image.label }} (опционально)</label>
+            {{ form.image(class="form-control", accept="image/*", id="newImageInput") }}
+            <div id="newImagePreview" class="mt-2" style="display: none;">
+                <img id="previewNew" style="max-height: 200px; border-radius: 10px;">
+                <p class="small mt-1">Новое изображение заменит текущее</p>
+            </div>
+            {% if form.image.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.image.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="text-end">
+            <a href="{{ url_for('admin.news') }}" class="btn btn-secondary">Отмена</a>
+            <button type="submit" class="btn btn-cosmos">Сохранить изменения</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('newImageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('previewNew').src = event.target.result;
+            document.getElementById('newImagePreview').style.display = 'block';
+            const currentImage = document.getElementById('currentImage');
+            if (currentImage) currentImage.style.opacity = '0.5';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('newImagePreview').style.display = 'none';
+        const currentImage = document.getElementById('currentImage');
+        if (currentImage) currentImage.style.opacity = '1';
+    }
+});
+</script>
+</div>
+{% endblock %}

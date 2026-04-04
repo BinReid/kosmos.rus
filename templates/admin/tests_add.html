@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2 class="mb-4">
+    <i class="fas fa-plus text-danger me-2"></i>
+    Добавить тест
+</h2>
+
+<div class="cosmos-card p-4">
+    <form method="POST" id="testForm" onsubmit="return validateForm()">
+        {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.title.label }} <span class="text-danger">*</span></label>
+            {{ form.title(class="form-control", placeholder="Например: Основы космонавтики") }}
+            {% if form.title.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.title.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label">{{ form.description.label }}</label>
+            {{ form.description(class="form-control", rows="3", placeholder="Опишите, что проверяет этот тест...") }}
+            {% if form.description.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.description.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-4 p-3 bg-dark rounded">
+            <label class="form-label fw-bold">
+                <i class="fas fa-list-ol text-danger me-2"></i>Настройка вопросов
+            </label>
+            <div class="row align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label">Количество вопросов</label>
+                    <input type="number" id="questionCount" class="form-control" min="1" max="20" value="3">
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-outline-cosmos w-100" onclick="generateQuestions()">
+                        <i class="fas fa-sync-alt me-2"></i>Сгенерировать поля
+                    </button>
+                </div>
+            </div>
+            <small class="d-block mt-2">
+                <i class="fas fa-info-circle me-1"></i>
+                Каждый вопрос должен иметь 4 варианта ответа. Укажите номер правильного варианта (1-4).
+            </small>
+        </div>
+        
+        <div id="questionsContainer"></div>
+        
+        <div class="text-end mt-4 pt-3 border-top border-secondary">
+            <a href="{{ url_for('admin.tests') }}" class="btn btn-secondary me-2">Отмена</a>
+            <button type="submit" class="btn btn-cosmos">
+                <i class="fas fa-save me-2"></i>Сохранить тест
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+let questionCount = 0;
+
+function generateQuestions() {
+    const count = parseInt(document.getElementById('questionCount').value);
+    const container = document.getElementById('questionsContainer');
+    
+    if (isNaN(count) || count < 1) {
+        alert('Количество вопросов должно быть не менее 1');
+        return;
+    }
+    if (count > 20) {
+        alert('Максимальное количество вопросов - 20');
+        return;
+    }
+    
+    container.innerHTML = '';
+    questionCount = count;
+    
+    for(let i = 0; i < count; i++) {
+        container.innerHTML += `
+            <div class="card bg-dark mb-4 p-3 border-secondary" data-question-index="${i}">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-danger mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Вопрос ${i+1}
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeQuestion(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label labl-col">Текст вопроса <span class="text-danger">*</span></label>
+                    <textarea name="question_${i}" class="form-control" rows="2" required placeholder="Например: Кто был первым человеком в космосе?"></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label labl-col">Вариант 1 <span class="text-danger">*</span></label>
+                        <input type="text" name="q${i}_opt1" class="form-control" required placeholder="Вариант ответа 1">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label labl-col">Вариант 2 <span class="text-danger">*</span></label>
+                        <input type="text" name="q${i}_opt2" class="form-control" required placeholder="Вариант ответа 2">
+                    </div>
+                    <div class="col-md-6 mb-2 labl-col">
+                        <label class="form-label">Вариант 3 <span class="text-danger">*</span></label>
+                        <input type="text" name="q${i}_opt3" class="form-control" required placeholder="Вариант ответа 3">
+                    </div>
+                    <div class="col-md-6 mb-2 labl-col">
+                        <label class="form-label">Вариант 4 <span class="text-danger">*</span></label>
+                        <input type="text" name="q${i}_opt4" class="form-control" required placeholder="Вариант ответа 4">
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <label class="form-label labl-col">Правильный ответ <span class="text-danger">*</span></label>
+                    <input type="number" name="q${i}_correct" class="form-control" min="1" max="4" required placeholder="Номер правильного варианта (1-4)">
+                    <small>Укажите номер варианта, который является правильным ответом</small>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Добавляем скрытое поле с количеством вопросов
+    let hiddenInput = document.getElementById('questionCountHidden');
+    if (!hiddenInput) {
+        hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'question_count';
+        hiddenInput.id = 'questionCountHidden';
+        container.appendChild(hiddenInput);
+    }
+    hiddenInput.value = count;
+}
+
+function removeQuestion(button) {
+    const card = button.closest('.card');
+    const container = document.getElementById('questionsContainer');
+    const questions = container.querySelectorAll('.card');
+    
+    if (questions.length > 1) {
+        card.remove();
+        // Обновляем нумерацию оставшихся вопросов
+        const remainingQuestions = container.querySelectorAll('.card');
+        remainingQuestions.forEach((q, idx) => {
+            const header = q.querySelector('h5');
+            if (header) {
+                header.innerHTML = `<i class="fas fa-question-circle me-2"></i>Вопрос ${idx+1}`;
+            }
+            // Обновляем индексы в именах полей
+            const inputs = q.querySelectorAll('textarea, input');
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                if (name) {
+                    const newName = name.replace(/_\d+/, `_${idx}`);
+                    input.setAttribute('name', newName);
+                }
+            });
+            q.setAttribute('data-question-index', idx);
+        });
+        // Обновляем скрытое поле
+        const hiddenInput = document.getElementById('questionCountHidden');
+        if (hiddenInput) {
+            hiddenInput.value = remainingQuestions.length;
+        }
+    } else {
+        alert('Нельзя удалить единственный вопрос. Добавьте хотя бы один вопрос.');
+    }
+}
+
+function validateForm() {
+    const questions = document.querySelectorAll('.card');
+    let isValid = true;
+    let errorMessages = [];
+    
+    questions.forEach((q, idx) => {
+        const questionText = q.querySelector(`textarea[name^="question_"]`);
+        if (questionText && !questionText.value.trim()) {
+            errorMessages.push(`Вопрос ${idx+1}: текст вопроса не заполнен`);
+            isValid = false;
+        }
+        
+        const options = [];
+        for(let i = 1; i <= 4; i++) {
+            const opt = q.querySelector(`input[name="q${idx}_opt${i}"]`);
+            if (opt && !opt.value.trim()) {
+                errorMessages.push(`Вопрос ${idx+1}: вариант ${i} не заполнен`);
+                isValid = false;
+            }
+            if (opt) options.push(opt.value.trim());
+        }
+        
+        const correct = q.querySelector(`input[name="q${idx}_correct"]`);
+        if (correct) {
+            const correctValue = parseInt(correct.value);
+            if (isNaN(correctValue) || correctValue < 1 || correctValue > 4) {
+                errorMessages.push(`Вопрос ${idx+1}: укажите правильный ответ (число от 1 до 4)`);
+                isValid = false;
+            }
+        }
+        
+        // Проверка на уникальность вариантов (необязательно, но полезно)
+        const uniqueOptions = new Set(options);
+        if (uniqueOptions.size < 4 && options.every(opt => opt)) {
+            errorMessages.push(`Вопрос ${idx+1}: варианты ответов должны быть уникальными`);
+            // Не делаем обязательным, только предупреждаем
+        }
+    });
+    
+    if (!isValid) {
+        alert('Пожалуйста, исправьте следующие ошибки:\n\n' + errorMessages.join('\n'));
+        return false;
+    }
+    
+    return true;
+}
+
+// Генерируем 3 вопроса по умолчанию
+window.onload = function() {
+    document.getElementById('questionCount').value = 3;
+    generateQuestions();
+}
+</script>
+</div>
+{% endblock %}

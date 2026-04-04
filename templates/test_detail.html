@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="cosmos-card p-4">
+            <h2 class="mb-3">{{ test.title }}</h2>
+            <p class="mb-4">{{ test.description }}</p>
+            
+            <form method="POST" action="{{ url_for('tests.test_submit', test_id=test.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                {% for question in test.questions %}
+                {% set options = question.get_options() %}
+                <div class="mb-4 p-3 border-start border-danger border-3">
+                    <h5 class="mb-3">{{ loop.index }}. {{ question.text }}</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="q{{ loop.index0 }}" value="1" id="q{{ loop.index0 }}_1" required>
+                        <label class="form-check-label" for="q{{ loop.index0 }}_1">
+                            {{ options[0] }}
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="q{{ loop.index0 }}" value="2" id="q{{ loop.index0 }}_2" required>
+                        <label class="form-check-label" for="q{{ loop.index0 }}_2">
+                            {{ options[1] }}
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="q{{ loop.index0 }}" value="3" id="q{{ loop.index0 }}_3" required>
+                        <label class="form-check-label" for="q{{ loop.index0 }}_3">
+                            {{ options[2] }}
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="q{{ loop.index0 }}" value="4" id="q{{ loop.index0 }}_4" required>
+                        <label class="form-check-label" for="q{{ loop.index0 }}_4">
+                            {{ options[3] }}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-cosmos btn-lg">
+                        Завершить тест <i class="fas fa-check-circle ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

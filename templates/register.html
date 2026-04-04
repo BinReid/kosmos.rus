@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: calc(100vh - 200px);">
+    <div class="col-md-6 col-lg-5">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="icon">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <h3>Регистрация</h3>
+                <p>Присоединяйтесь к космическому сообществу</p>
+            </div>
+            
+            <!-- Flash уведомления теперь здесь -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div id="flashContainer">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" class="auth-form" id="registerForm">
+                {{ form.hidden_tag() }}
+                
+                <div id="formErrors" class="alert alert-danger" style="display: none;"></div>
+                
+                <div class="form-group">
+                    <label>{{ form.username.label }}</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        {{ form.username(class="form-control", placeholder="Введите имя пользователя", id="username") }}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.email.label }}</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        {{ form.email(class="form-control", placeholder="Введите email", id="email") }}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.age.label }}</label>
+                    <div class="input-group">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ form.age(class="form-control", placeholder="Ваш возраст", type="number", min="12", max="100", id="age") }}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.password.label }}</label>
+                    <div class="input-group password-group">
+                        <i class="fas fa-lock"></i>
+                        {{ form.password(class="form-control", placeholder="Введите пароль", id="password") }}
+                        <button type="button" class="password-toggle" data-target="password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.confirm_password.label }}</label>
+                    <div class="input-group password-group">
+                        <i class="fas fa-lock"></i>
+                        {{ form.confirm_password(class="form-control", placeholder="Подтвердите пароль", id="confirm_password") }}
+                        <button type="button" class="password-toggle" data-target="confirm_password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="info-alert">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Доступ к разделам:</strong>
+                    <ul>
+                        <li>С 16 лет — раздел <strong>"Карьера"</strong></li>
+                        <li>С 18 лет — раздел <strong>"Вакансии"</strong></li>
+                    </ul>
+                </div>
+                
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-user-plus me-2"></i>Зарегистрироваться
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Уже есть аккаунт? <a href="{{ url_for('auth.login') }}">Войдите</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Стили для кнопки показа пароля */
+.password-group {
+    position: relative;
+}
+
+.password-group .form-control {
+    padding-right: 45px;
+    border-radius: 50px !important;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.3s ease;
+    padding: 5px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle:hover {
+    color: var(--russia-red);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.password-toggle i {
+    font-size: 1.1rem;
+}
+
+/* Стили для flash уведомлений внутри карточки */
+.alert {
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    position: relative;
+    animation: slideDown 0.3s ease;
+}
+
+.alert-success {
+    background: rgba(25, 135, 84, 0.2);
+    border: 1px solid #198754;
+    color: #90ee90;
+}
+
+.alert-danger {
+    background: rgba(213, 43, 30, 0.2);
+    border: 1px solid var(--russia-red);
+    color: #ff6b6b;
+}
+
+.alert-info {
+    background: rgba(13, 202, 240, 0.2);
+    border: 1px solid #0dcaf0;
+    color: #5bc0de;
+}
+
+.alert-warning {
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid #ffc107;
+    color: #ffdb6b;
+}
+
+.btn-close {
+    filter: invert(1);
+    opacity: 0.7;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#flashContainer {
+    margin-bottom: 20px;
+}
+
+/* Исправление для скругления правой стороны поля ввода */
+.input-group:not(.password-group) .form-control {
+    border-radius: 50px !important;
+}
+
+.input-group i:first-child {
+    border-radius: 50px 0 0 50px;
+}
+</style>
+
+<script>
+// Функция для переключения видимости пароля
+function setupPasswordToggle() {
+    const toggleButtons = document.querySelectorAll('.password-toggle');
+    
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+}
+
+// Автоматическое скрытие flash сообщений
+function autoHideAlerts() {
+    const alerts = document.querySelectorAll('#flashContainer .alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.animation = 'slideDown 0.3s reverse';
+            setTimeout(() => {
+                if (alert.parentElement) alert.remove();
+            }, 300);
+        }, 5000);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    setupPasswordToggle();
+    autoHideAlerts();
+    
+    const form = document.getElementById('registerForm');
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('Форма регистрации отправлена');
+        
+        const formErrors = document.getElementById('formErrors');
+        formErrors.style.display = 'none';
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Регистрация...';
+        
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            console.log('Ответ сервера:', data);
+            
+            if (data.success) {
+                const username = document.getElementById('username').value;
+                console.log('Показываем приветствие для:', username);
+                
+                if (window.starWelcome) {
+                    await window.starWelcome.showWelcomeScreen(username);
+                    console.log('Приветствие завершено');
+                }
+                
+                console.log('Редирект на:', data.redirect);
+                window.location.href = data.redirect;
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                
+                if (data.errors) {
+                    let errorMessage = '';
+                    for (const [field, error] of Object.entries(data.errors)) {
+                        errorMessage += error + '\n';
+                    }
+                    formErrors.textContent = errorMessage;
+                } else {
+                    formErrors.textContent = 'Ошибка при регистрации';
+                }
+                formErrors.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            formErrors.textContent = 'Произошла ошибка при отправке формы';
+            formErrors.style.display = 'block';
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-university text-danger me-2"></i>
+        Университеты для подготовки космических специалистов
+    </h2>
+    <a href="{{ url_for('career.index') }}" class="btn btn-outline-cosmos">
+        <i class="fas fa-arrow-left me-2"></i>Назад
+    </a>
+</div>
+
+<div class="universities-grid">
+    {% for uni in universities %}
+    <div class="cosmos-card university-card">
+        <div class="card-body p-4">
+            <div class="text-center mb-3">
+                {% if uni.get_image() %}
+                <img src="{{ uni.get_image() }}" class="university-image" alt="{{ uni.name }}">
+                {% else %}
+                <div class="university-placeholder">
+                    <i class="fas fa-university fa-3x text-danger"></i>
+                </div>
+                {% endif %}
+            </div>
+            <h5 class="university-name">{{ uni.name }}</h5>
+            <p class="university-city">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ uni.city }}
+            </p>
+            <p class="university-description">{{ uni.description[:100] }}{% if uni.description|length > 100 %}...{% endif %}</p>
+            <a href="{{ url_for('career.university_detail', university_id=uni.id) }}" class="btn btn-outline-cosmos w-100">
+                Подробнее <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-university"></i>
+            </div>
+            <h4 class="empty-state-title">ВУЗы скоро появятся</h4>
+            <p class="empty-state-text">Университеты пока не добавлены. Скоро появятся!</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

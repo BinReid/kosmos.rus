@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-bullhorn text-danger me-2"></i>
+        Управление вакансиями
+    </h2>
+    <a href="{{ url_for('admin.admin_vacancy_add') }}" class="btn btn-cosmos">
+        <i class="fas fa-plus me-2"></i>Добавить вакансию
+    </a>
+</div>
+
+<div class="cosmos-card p-4">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Компания</th>
+                    <th>Локация</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vacancy in vacancies %}
+                <tr>
+                    <td>{{ vacancy.id }}</td>
+                    <td>{{ vacancy.title }}</td>
+                    <td>{{ vacancy.company }}</td>
+                    <td>{{ vacancy.location }}</td>
+                    <td>
+                        {% if vacancy.is_active %}
+                        <span class="badge bg-success">Активна</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Закрыта</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin.admin_vacancy_edit', vacancy_id=vacancy.id) }}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{{ url_for('admin.admin_vacancy_delete', vacancy_id=vacancy.id) }}" class="btn btn-sm btn-danger" 
+                           onclick="return confirm('Удалить вакансию?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+{% endblock %}

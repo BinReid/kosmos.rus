@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
+        <h2 class="fw-bold m-0">
+            <i class="fas fa-rocket me-2" style="color: #bb2d3b;"></i>
+            Админ-центр <span class="text-muted fs-6 fw-normal">| Обзор системы</span>
+        </h2>
+    </div>
+
+    <!-- Статистические карточки -->
+    <div class="row g-4 mb-5">
+        {% set items = [
+            {'label': 'Пользователи', 'count': stats.users_count, 'icon': 'fa-users', 'url': 'admin.users'},
+            {'label': 'Новости', 'count': stats.news_count, 'icon': 'fa-newspaper', 'url': 'admin.news'},
+            {'label': 'Тесты', 'count': stats.tests_count, 'icon': 'fa-question-circle', 'url': 'admin.tests'},
+            {'label': 'Достижения', 'count': stats.achievements_count, 'icon': 'fa-trophy', 'url': 'admin.achievements'},
+            {'label': 'ВУЗы', 'count': stats.universities_count, 'icon': 'fa-university', 'url': 'admin.admin_universities'},
+            {'label': 'Направления', 'count': stats.directions_count, 'icon': 'fa-compass', 'url': 'admin.admin_directions'},
+            {'label': 'Вакансии', 'count': stats.vacancies_count, 'icon': 'fa-bullhorn', 'url': 'admin.admin_vacancies'}
+        ] %}
+
+        {% for item in items %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="stat-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon">
+                        <i class="fas {{ item.icon }}"></i>
+                    </div>
+                    <span class="stat-label">{{ item.label }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-end">
+                    <h3 class="stat-number mb-0">{{ item.count }}</h3>
+                    <a href="{{ url_for(item.url) }}" class="stat-link">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Основной контент -->
+    <div class="row g-4">
+        <!-- График активности -->
+        <div class="col-lg-8">
+            <div class="cosmos-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <h5 class="fw-bold m-0">
+                        <i class="fas fa-chart-line me-2" style="color: #bb2d3b;"></i>
+                        Активность пользователей
+                    </h5>
+                    <div class="d-flex gap-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="active-dot"></span>
+                            <span class="small text-muted">Активность (визиты)</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avg-dot"></span>
+                            <span class="small text-muted">Среднее значение</span>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="activityChart" style="max-height: 320px; width: 100%;"></canvas>
+                <div class="mt-3 text-center text-muted small">
+                    <i class="far fa-clock me-1"></i> Данные за последние 7 дней
+                </div>
+            </div>
+        </div>
+
+        <!-- Боковая панель -->
+        <div class="col-lg-4">
+            <div class="row g-4">
+                <!-- Факт дня -->
+                <div class="col-12">
+                    <div class="cosmos-card p-4 fact-card">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="fact-icon">
+                                <i class="fas fa-star-of-life"></i>
+                            </div>
+                            <h5 class="fw-bold m-0">Факт дня</h5>
+                        </div>
+                        <p class="fact-text mb-4">
+                            {{ daily_fact.fact if daily_fact else 'Космонавты видят 16 рассветов и закатов за сутки на МКС!' }}
+                        </p>
+                        <a href="{{ url_for('admin.fact') }}" class="btn btn-accent w-100">
+                            <i class="fas fa-edit me-2"></i>Редактировать
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Детальная статистика -->
+                <div class="col-12">
+                    <div class="cosmos-card p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="fas fa-chart-simple me-2" style="color: #bb2d3b;"></i>
+                            Детальная статистика
+                        </h5>
+                        <div class="stats-detail">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-user-check me-2" style="color: #bb2d3b;"></i>
+                                    Активные (сегодня)
+                                </div>
+                                <div class="detail-value">{{ stats.active_today }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-calendar-week me-2" style="color: #bb2d3b;"></i>
+                                    Активные (за 7 дней)
+                                </div>
+                                <div class="detail-value">{{ stats.active_week }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-eye me-2" style="color: #bb2d3b;"></i>
+                                    Просмотры новостей
+                                </div>
+                                <div class="detail-value">{{ stats.total_views }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-users me-2" style="color: #bb2d3b;"></i>
+                                    Всего пользователей
+                                </div>
+                                <div class="detail-value">{{ stats.users_count }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Единый акцентный цвет */
+:root {
+    --accent-color: #bb2d3b;
+    --accent-rgb: 187, 45, 59;
+}
+
+/* Стили для статистических карточек */
+.stat-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-color);
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.stat-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background: rgba(187, 45, 59, 0.15);
+    color: var(--accent-color);
+}
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #aaa;
+}
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Russo One', cursive;
+    color: #fff;
+}
+.stat-link {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--accent-color);
+}
+.stat-link:hover {
+    background: rgba(187, 45, 59, 0.2);
+    transform: translateX(3px);
+    color: var(--accent-color);
+}
+
+/* Стили для графика */
+.active-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: inline-block;
+}
+.avg-dot {
+    width: 10px;
+    height: 10px;
+    background: #ffc107;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Стили для карточки факта */
+.fact-card {
+    background: linear-gradient(135deg, rgba(187, 45, 59, 0.12), rgba(187, 45, 59, 0.04));
+    border: 1px solid rgba(187, 45, 59, 0.25);
+}
+.fact-icon {
+    width: 45px;
+    height: 45px;
+    background: rgba(187, 45, 59, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--accent-color);
+}
+.fact-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #ddd;
+    font-style: italic;
+}
+
+/* Стили для детальной статистики */
+.stats-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.detail-item:last-child {
+    border-bottom: none;
+}
+.detail-label {
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.detail-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Russo One', cursive;
+}
+
+/* Кнопка с акцентным цветом */
+.btn-accent {
+    background: var(--accent-color);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    display: inline-block;
+    text-decoration: none;
+    font-family: 'Russo One', cursive;
+    color: white;
+}
+.btn-accent:hover {
+    background: #9e2531;
+    transform: scale(1.02);
+    color: white;
+}
+
+/* Общие улучшения */
+.cosmos-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+.cosmos-card:hover {
+    border-color: rgba(187, 45, 59, 0.3);
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    
+    // Реалистичные данные активности за неделю
+    const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    const activityData = {{ stats.weekly_activity|tojson|safe }};
+    
+    // Вычисляем среднее значение
+    const average = activityData.reduce((a, b) => a + b, 0) / activityData.length;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: weekDays,
+            datasets: [
+                {
+                    label: 'Активные пользователи',
+                    data: activityData,
+                    borderColor: '#bb2d3b',
+                    backgroundColor: 'rgba(187, 45, 59, 0.05)',
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#bb2d3b',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Среднее значение',
+                    data: Array(7).fill(Math.round(average)),
+                    borderColor: '#ffc107',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [8, 6],
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    tension: 0,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#ddd',
+                    borderColor: '#bb2d3b',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw + ' чел.';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#aaa',
+                        stepSize: 5,
+                        callback: function(value) {
+                            return value + ' чел.';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Количество пользователей',
+                        color: '#aaa',
+                        font: { size: 11 }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#aaa',
+                        font: { size: 12 }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            elements: {
+                line: {
+                    borderJoin: 'round'
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

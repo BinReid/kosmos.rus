@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2 class="mb-4">
+    <i class="fas fa-plus text-danger me-2"></i>
+    Добавить достижение
+</h2>
+
+<div class="cosmos-card p-4">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.name.label }}</label>
+                {{ form.name(class="form-control", placeholder="Например: Первый шаг") }}
+                {% if form.name.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.name.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small>Название достижения</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.icon.label }}</label>
+                {{ form.icon(class="form-control", placeholder="🚀 🏆 ⭐ 🎯") }}
+                {% if form.icon.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.icon.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small>Эмодзи для иконки</small>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.description.label }}</label>
+            {{ form.description(class="form-control", rows="2", placeholder="Описание достижения") }}
+            {% if form.description.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.description.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">{{ form.condition_type.label }}</label>
+                {{ form.condition_type(class="form-select") }}
+                {% if form.condition_type.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.condition_type.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small>Тип действия для получения</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">{{ form.condition_value.label }}</label>
+                {{ form.condition_value(class="form-control", type="number") }}
+                {% if form.condition_value.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.condition_value.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small>Количество для выполнения</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">{{ form.points_reward.label }}</label>
+                {{ form.points_reward(class="form-control", type="number") }}
+                {% if form.points_reward.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.points_reward.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small>Очков за достижение</small>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.color.label }}</label>
+            {{ form.color(class="form-select") }}
+            {% if form.color.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in form.color.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+            <div class="mt-2">
+                <span class="badge" style="background: #cd7f32; color: white;">Бронзовый</span>
+                <span class="badge ms-2" style="background: #c0c0c0; color: black;">Серебряный</span>
+                <span class="badge ms-2" style="background: #ffd700; color: black;">Золотой</span>
+                <span class="badge ms-2" style="background: #e5e4e2; color: black;">Платиновый</span>
+            </div>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-lightbulb me-2"></i>
+            <strong>Примеры достижений:</strong>
+            <ul class="mb-0 mt-2">
+                <li><strong>Первый шаг</strong> - Регистрация (условие: registration, значение: 1)</li>
+                <li><strong>Знаток космоса</strong> - Прочитать 5 новостей (условие: news_read, значение: 5)</li>
+                <li><strong>Звездный путь</strong> - Пройти 3 теста (условие: tests_passed, значение: 3)</li>
+                <li><strong>🔥 Серия побед</strong> - Заходить 7 дней подряд (условие: streak, значение: 7)</li>
+                <li><strong>🎯 Идеал</strong> - Пройти тест на 100% (условие: perfect_test, значение: 1)</li>
+            </ul>
+        </div>
+        
+        <div class="text-end mt-4">
+            <a href="{{ url_for('admin.achievements') }}" class="btn btn-secondary">Отмена</a>
+            <button type="submit" class="btn btn-cosmos">Добавить достижение</button>
+        </div>
+    </form>
+</div>
+</div>
+{% endblock %}

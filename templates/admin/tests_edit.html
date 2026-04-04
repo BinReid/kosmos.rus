@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2 class="mb-4">
+    <i class="fas fa-edit text-danger me-2"></i>
+    Редактировать тест: {{ test.title }}
+</h2>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="cosmos-card p-4 mb-4">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    <label class="form-label">{{ form.title.label }}</label>
+                    {{ form.title(class="form-control") }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.title.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">{{ form.description.label }}</label>
+                    {{ form.description(class="form-control", rows="3") }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.description.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-end">
+                    <a href="{{ url_for('admin.tests') }}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-cosmos">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Вопросы теста -->
+<div class="cosmos-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>
+            <i class="fas fa-question-circle text-danger me-2"></i>
+            Вопросы теста ({{ test.questions.count() }})
+        </h4>
+        <button type="button" class="btn btn-cosmos" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+            <i class="fas fa-plus me-2"></i>Добавить вопрос
+        </button>
+    </div>
+    
+    {% if test.questions.count() > 0 %}
+        <div class="accordion" id="questionsAccordion">
+            {% for question in test.questions %}
+            <div class="accordion-item bg-dark border-secondary mb-3">
+                <h2 class="accordion-header" id="heading{{ question.id }}">
+                    <button class="accordion-button bg-dark text-white collapsed" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#collapse{{ question.id }}" 
+                            aria-expanded="false" aria-controls="collapse{{ question.id }}">
+                        <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                            <span>
+                                <strong>Вопрос {{ loop.index }}:</strong> 
+                                {{ question.text[:80] }}{% if question.text|length > 80 %}...{% endif %}
+                            </span>
+                            <span class="badge bg-info ms-2">
+                                Правильный ответ: вариант {{ question.correct + 1 }}
+                            </span>
+                        </div>
+                    </button>
+                </h2>
+                <div id="collapse{{ question.id }}" class="accordion-collapse collapse" 
+                     aria-labelledby="heading{{ question.id }}" data-bs-parent="#questionsAccordion">
+                    <div class="accordion-body">
+                        <form method="POST" action="{{ url_for('admin.api_edit_question', question_id=question.id) }}" 
+                              class="edit-question-form" data-question-id="{{ question.id }}">
+                            <div class="mb-3">
+                                <label class="form-label labl-col">Текст вопроса <span class="text-danger">*</span></label>
+                                <textarea name="text" class="form-control" rows="3" required>{{ question.text }}</textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label labl-col">Вариант 1 <span class="text-danger">*</span></label>
+                                    <input type="text" name="option1" class="form-control" required 
+                                           value="{{ question.get_options()[0] if question.get_options()|length > 0 else '' }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label labl-col">Вариант 2 <span class="text-danger">*</span></label>
+                                    <input type="text" name="option2" class="form-control" required 
+                                           value="{{ question.get_options()[1] if question.get_options()|length > 1 else '' }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label labl-col">Вариант 3 <span class="text-danger">*</span></label>
+                                    <input type="text" name="option3" class="form-control" required 
+                                           value="{{ question.get_options()[2] if question.get_options()|length > 2 else '' }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label labl-col">Вариант 4 <span class="text-danger">*</span></label>
+                                    <input type="text" name="option4" class="form-control" required 
+                                           value="{{ question.get_options()[3] if question.get_options()|length > 3 else '' }}">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label labl-col">Правильный ответ <span class="text-danger">*</span></label>
+                                    <select name="correct" class="form-select" required>
+                                        <option class="op-col" value="1" {% if question.correct == 0 %}selected{% endif %}>Вариант 1</option>
+                                        <option class="op-col" value="2" {% if question.correct == 1 %}selected{% endif %}>Вариант 2</option>
+                                        <option class="op-col" value="3" {% if question.correct == 2 %}selected{% endif %}>Вариант 3</option>
+                                        <option class="op-col" value="4" {% if question.correct == 3 %}selected{% endif %}>Вариант 4</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3 d-flex align-items-end">
+                                    <div class="btn-group w-100">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save me-2"></i>Сохранить изменения
+                                        </button>
+                                        <button type="button" class="btn btn-danger" 
+                                                onclick="deleteQuestion({{ question.id }}, '{{ question.text[:50]|escape }}')">
+                                            <i class="fas fa-trash me-2"></i>Удалить вопрос
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-question-circle fa-4x mb-3"></i>
+            <p>В этом тесте пока нет вопросов</p>
+            <button type="button" class="btn btn-cosmos" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+                <i class="fas fa-plus me-2"></i>Добавить первый вопрос
+            </button>
+        </div>
+    {% endif %}
+    
+    <hr class="border-secondary my-4">
+    
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-danger" onclick="deleteAllQuestions({{ test.id }})">
+            <i class="fas fa-trash-alt me-2"></i>Удалить все вопросы
+        </button>
+        <a href="{{ url_for('admin.tests_add') }}" class="btn btn-outline-cosmos ms-auto">
+            <i class="fas fa-plus me-2"></i>Создать новый тест
+        </a>
+    </div>
+</div>
+
+<!-- Модальное окно добавления вопроса -->
+<div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="addQuestionModalLabel">
+                    <i class="fas fa-plus-circle text-danger me-2"></i>Добавить вопрос
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.api_add_question', test_id=test.id) }}" id="addQuestionForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Текст вопроса <span class="text-danger">*</span></label>
+                        <textarea name="text" class="form-control" rows="3" required placeholder="Введите текст вопроса..."></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Вариант 1 <span class="text-danger">*</span></label>
+                            <input type="text" name="option1" class="form-control" required placeholder="Вариант ответа 1">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Вариант 2 <span class="text-danger">*</span></label>
+                            <input type="text" name="option2" class="form-control" required placeholder="Вариант ответа 2">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Вариант 3 <span class="text-danger">*</span></label>
+                            <input type="text" name="option3" class="form-control" required placeholder="Вариант ответа 3">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Вариант 4 <span class="text-danger">*</span></label>
+                            <input type="text" name="option4" class="form-control" required placeholder="Вариант ответа 4">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Правильный ответ <span class="text-danger">*</span></label>
+                        <select name="correct" class="form-select" required>
+                            <option value="1">Вариант 1</option>
+                            <option value="2">Вариант 2</option>
+                            <option value="3">Вариант 3</option>
+                            <option value="4">Вариант 4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-cosmos">
+                        <i class="fas fa-save me-2"></i>Добавить вопрос
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Функция удаления вопроса
+function deleteQuestion(questionId, questionText) {
+    if (confirm(`Удалить вопрос "${questionText}"?`)) {
+        fetch(`/admin/api/questions/delete/${questionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Вопрос успешно удален', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification('Ошибка при удалении вопроса', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Ошибка при удалении вопроса', 'danger');
+        });
+    }
+}
+
+// Функция удаления всех вопросов
+function deleteAllQuestions(testId) {
+    if (confirm('Удалить ВСЕ вопросы этого теста? Это действие нельзя отменить!')) {
+        fetch(`/admin/api/tests/${testId}/questions/delete_all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Все вопросы удалены', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification('Ошибка при удалении вопросов', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Ошибка при удалении вопросов', 'danger');
+        });
+    }
+}
+
+// Обработка формы редактирования вопроса (AJAX)
+document.querySelectorAll('.edit-question-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const questionId = this.dataset.questionId;
+        const data = {
+            text: formData.get('text'),
+            option1: formData.get('option1'),
+            option2: formData.get('option2'),
+            option3: formData.get('option3'),
+            option4: formData.get('option4'),
+            correct: parseInt(formData.get('correct'))
+        };
+        
+        fetch(`/admin/api/questions/edit/${questionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Вопрос успешно обновлен', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.error || 'Ошибка при обновлении вопроса', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Ошибка при обновлении вопроса', 'danger');
+        });
+    });
+});
+
+// Обработка формы добавления вопроса (AJAX)
+const addQuestionForm = document.getElementById('addQuestionForm');
+if (addQuestionForm) {
+    addQuestionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = {
+            text: formData.get('text'),
+            option1: formData.get('option1'),
+            option2: formData.get('option2'),
+            option3: formData.get('option3'),
+            option4: formData.get('option4'),
+            correct: parseInt(formData.get('correct'))
+        };
+        
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Вопрос успешно добавлен', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification(data.error || 'Ошибка при добавлении вопроса', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Ошибка при добавлении вопроса', 'danger');
+        });
+    });
+}
+
+// Показываем уведомления
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    notification.style.zIndex = '9999';
+    notification.style.minWidth = '300px';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+</script>
+</div>
+{% endblock %}

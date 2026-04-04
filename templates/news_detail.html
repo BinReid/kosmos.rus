@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="cosmos-card p-4 mb-4">
+            <h1 class="mb-3">{{ news.title }}</h1>
+            <div class="mb-4">
+                <i class="fas fa-calendar-alt me-2"></i>{{ news.created_at.strftime('%d.%m.%Y %H:%M') }}
+                <i class="fas fa-eye ms-3 me-2"></i>{{ news.views }} просмотров
+            </div>
+            
+            {% if news.get_image() %}
+            <div class="text-center mb-4">
+                <img src="{{ news.get_image() }}" 
+                     class="img-fluid rounded" style="max-height: 400px; object-fit: cover;" 
+                     alt="{{ news.title }}">
+            </div>
+            {% endif %}
+            
+            <div class="news-content" style="font-size: 1.1rem; line-height: 1.8;">
+                {{ news.content|safe }}
+            </div>
+            
+            <div id="summaryContainer" class="mt-4" style="display: none;">
+                <div class="summary-box" style="background-color: #023569; border: 1px solid #1d72cc; border-radius: 0.25rem; padding: 1rem;">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <i class="fas fa-robot me-2"></i>
+                            <strong>Краткое содержание:</strong>
+                        </div>
+                        <button type="button" class="btn-close" id="closeSummaryBtn" aria-label="Close"></button>
+                    </div>
+                    <p id="summaryText" class="mt-2 mb-0"></p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-3 border-top border-secondary">
+                <button id="summarizeBtn" class="btn btn-cosmos">
+                    <i class="fas fa-compress-alt me-2"></i>Сжать новость
+                </button>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <a href="{{ url_for('main.news_list') }}" class="btn btn-outline-cosmos">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться к новостям
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    function getCSRFToken() {
+        let token = document.querySelector('meta[name="csrf-token"]');
+        if (token) {
+            return token.getAttribute('content');
+        }
+        
+        let cookieValue = null;
+        let name = 'csrf_token';
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    $('#closeSummaryBtn').click(function() {
+        $('#summaryContainer').slideUp();
+    });
+    
+    $('#summarizeBtn').click(function() {
+        var btn = $(this);
+        
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Обработка...');
+        
+        $.ajax({
+            url: '{{ url_for("main.summarize_news", news_id=news.id) }}',
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+            },
+            success: function(data) {
+                if (data.success && data.summary) {
+                    $('#summaryText').text(data.summary);
+                    $('#summaryContainer').slideDown();
+                } else {
+                    let errorMsg = data.error || 'Не удалось сжать новость';
+                    alert('Ошибка: ' + errorMsg);
+                }
+                btn.prop('disabled', false).html('<i class="fas fa-compress-alt me-2"></i>Сжать новость');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                let errorMsg = 'Произошла ошибка при обработке запроса';
+                try {
+                    let response = JSON.parse(xhr.responseText);
+                    if (response.error) errorMsg = response.error;
+                } catch(e) {}
+                alert(errorMsg);
+                btn.prop('disabled', false).html('<i class="fas fa-compress-alt me-2"></i>Сжать новость');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
