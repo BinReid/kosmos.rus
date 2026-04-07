@@ -22,10 +22,36 @@ class User(db.Model):
     last_visit = db.Column(db.Date, default=date.today)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_admin = db.Column(db.Boolean, default=False)
-    
+    elevator_achievements = db.Column(db.Text, default='[]')
+
     achievements = db.relationship('UserAchievement', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     test_results = db.relationship('TestResult', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     read_news = db.relationship('UserReadNews', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    
+    def get_elevator_achievements(self):
+        """Получить список достижений космического лифта"""
+        import json
+        if self.elevator_achievements:
+            return json.loads(self.elevator_achievements)
+        return []
+    
+    def add_elevator_achievement(self, event_id):
+        """Добавить достижение космического лифта"""
+        import json
+        achievements = self.get_elevator_achievements()
+        if event_id not in achievements:
+            achievements.append(event_id)
+            self.elevator_achievements = json.dumps(achievements)
+            return True
+        return False
+    
+    def has_elevator_achievement(self, event_id):
+        """Проверить, есть ли достижение"""
+        return event_id in self.get_elevator_achievements()
+    
+    def get_elevator_progress(self):
+        """Получить прогресс (количество полученных достижений)"""
+        return len(self.get_elevator_achievements())
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -259,3 +285,86 @@ class Vacancy(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     expires_at = db.Column(db.Date, nullable=True)
+
+class Project(db.Model):
+    """Модель космических проектов"""
+    __tablename__ = 'projects'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    short_description = db.Column(db.String(300), nullable=False)
+    description_full = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(50), default='planned')  # planned, active, completed, paused
+    status_name = db.Column(db.String(100), default='В плане')
+    mission_type = db.Column(db.String(100), nullable=False)
+    year = db.Column(db.String(20), nullable=False)
+    image_data = db.Column(db.Text, nullable=True)
+    image_mime = db.Column(db.String(50), nullable=True)
+    goals = db.Column(db.Text, nullable=True)  # JSON array
+    partners = db.Column(db.Text, nullable=True)  # JSON array
+    updates = db.Column(db.Text, nullable=True)  # JSON array of {date, text}
+    sort_order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    def get_image(self):
+        if self.image_data:
+            return f"data:{self.image_mime};base64,{self.image_data}"
+        return None
+    
+    def get_goals_list(self):
+        try:
+            return json.loads(self.goals) if self.goals else []
+        except:
+            return []
+    
+    def set_goals_list(self, goals):
+        self.goals = json.dumps(goals, ensure_ascii=False)
+    
+    def get_partners_list(self):
+        try:
+            return json.loads(self.partners) if self.partners else []
+        except:
+            return []
+    
+    def set_partners_list(self, partners):
+        self.partners = json.dumps(partners, ensure_ascii=False)
+    
+    def get_updates_list(self):
+        try:
+            return json.loads(self.updates) if self.updates else []
+        except:
+            return []
+    
+    def set_updates_list(self, updates):
+        self.updates = json.dumps(updates, ensure_ascii=False)
+    
+    @property
+    def status_class(self):
+        """Возвращает CSS класс для статуса"""
+        status_map = {
+            'planned': 'secondary',
+            'active': 'success',
+            'completed': 'info',
+            'paused': 'warning'
+        }
+        return status_map.get(self.status, 'secondary')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'short_description': self.short_description,
+            'description_full': self.description_full,
+            'status': self.status,
+            'status_name': self.status_name,
+            'status_class': self.status_class,
+            'mission_type': self.mission_type,
+            'year': self.year,
+            'goals': self.get_goals_list(),
+            'partners': self.get_partners_list(),
+            'updates': self.get_updates_list(),
+            'sort_order': self.sort_order,
+            'is_active': self.is_active
+        }

@@ -4,8 +4,50 @@ from forms import RegistrationForm, LoginForm
 from utils.achievements import AchievementManager
 from datetime import date
 import hashlib
+import re
 
 auth_bp = Blueprint('auth', __name__)
+
+def check_password_strength(password):
+    """Проверка сложности пароля на сервере"""
+    score = 0
+    feedback = []
+    
+    if len(password) >= 6:
+        score += 1
+    else:
+        feedback.append("минимум 6 символов")
+    
+    if len(password) >= 10:
+        score += 1
+    
+    if re.search(r'[A-Z]', password):
+        score += 1
+    else:
+        feedback.append("хотя бы одну заглавную букву")
+    
+    if re.search(r'[0-9]', password):
+        score += 1
+    else:
+        feedback.append("хотя бы одну цифру")
+    
+    if re.search(r'[^A-Za-z0-9]', password):
+        score += 1
+    else:
+        feedback.append("хотя бы один спецсимвол")
+    
+    strength_levels = ['Очень слабый', 'Слабый', 'Средний', 'Хороший', 'Отличный']
+    strength = strength_levels[score] if score < len(strength_levels) else strength_levels[-1]
+    
+    is_strong = score >= 3
+    
+    return {
+        'score': score,
+        'strength': strength,
+        'is_strong': is_strong,
+        'feedback': feedback
+    }
+
 
 def generate_default_avatar(username, color):
     import base64
@@ -19,11 +61,35 @@ def generate_default_avatar(username, color):
     return base64.b64encode(svg.encode()).decode()
 
 
+# ========== ЭНДПОИНТ ДЛЯ ПРОВЕРКИ СЛОЖНОСТИ ПАРОЛЯ ==========
+@auth_bp.route('/check-password-strength', methods=['POST'])
+def check_password_strength_ajax():
+    """API endpoint для проверки сложности пароля (AJAX)"""
+    print("=== check-password-strength called ===")  # Отладка
+    data = request.get_json()
+    print("Received data:", data)  # Отладка
+    password = data.get('password', '')
+    result = check_password_strength(password)
+    print("Result:", result)  # Отладка
+    return jsonify(result)
+
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     
     if form.validate_on_submit():
+        # Дополнительная проверка сложности пароля на сервере
+        password_check = check_password_strength(form.password.data)
+        if not password_check['is_strong']:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({
+                    'success': False,
+                    'errors': {'password': f'Пароль слишком слабый. {", ".join(password_check["feedback"])}'}
+                })
+            flash(f'Пароль слишком слабый. {", ".join(password_check["feedback"])}', 'danger')
+            return render_template('register.html', form=form)
+        
         # Создаем пользователя
         user = User(
             username=form.username.data,
@@ -47,13 +113,15 @@ def register():
         session['user_id'] = user.id
         session['user_age'] = user.age
         
-        # AJAX запрос
+        # AJAX запрос - отправляем данные для анимации
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({
                 'success': True,
+                'username': user.username,
                 'redirect': url_for('profile.profile')
             })
         
+        # Обычный запрос (без AJAX)
         flash('Регистрация успешна! Добро пожаловать в Космос.Rus!', 'success')
         return redirect(url_for('profile.profile'))
     
@@ -100,14 +168,16 @@ def login():
             session['user_age'] = user.age
             session.permanent = form.remember_me.data
             
+            # AJAX запрос - отправляем данные для анимации
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({
                     'success': True,
+                    'username': user.username,
                     'redirect': url_for('profile.profile')
                 })
             
+            # Обычный запрос (без AJAX)
             flash(f'С возвращением, {user.username}!', 'success')
-            
             next_page = request.args.get('next')
             if next_page:
                 return redirect(next_page)

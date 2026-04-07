@@ -1,132 +1,349 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-4 mb-4">
-        <div class="cosmos-card p-4 text-center">
-            <div class="mb-3">
-                {% if user.get_avatar() %}
-                    <img src="{{ user.get_avatar() }}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
-                {% else %}
-                    <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #d32f2f, #b71c1c); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user-astronaut fa-3x"></i>
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- Левая колонка - карточка профиля -->
+        <div class="col-lg-4">
+            <div class="cosmos-card p-4 text-center">
+                <div class="mb-4">
+                    {% if user.get_avatar() %}
+                        <div class="avatar-wrapper">
+                            <img src="{{ user.get_avatar() }}" class="avatar-image" alt="Аватар">
+                        </div>
+                    {% else %}
+                        <div class="avatar-placeholder mx-auto">
+                            <i class="fas fa-user-astronaut fa-4x text-white"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <h3 class="username-display mb-2">{{ user.username }}</h3>
+                <p class="text-muted mb-3">
+                    <i class="fas fa-envelope me-1"></i>{{ user.email }}
+                </p>
+                
+                <div class="profile-stats">
+                    <div class="profile-stat-item">
+                        <div class="profile-stat-value">
+                            <i class="fas fa-star text-warning"></i> {{ user.level }}
+                        </div>
+                        <div class="profile-stat-label">уровень</div>
                     </div>
-                {% endif %}
+                    <div class="profile-stat-item">
+                        <div class="profile-stat-value">
+                            <i class="fas fa-gem text-warning"></i> {{ user.points }}
+                        </div>
+                        <div class="profile-stat-label">очков</div>
+                    </div>
+                    <div class="profile-stat-item">
+                        <div class="profile-stat-value">
+                            <i class="fas fa-fire text-danger"></i> {{ user.streak_days }}
+                        </div>
+                        <div class="profile-stat-label">дней</div>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('profile.profile') }}" class="btn btn-outline-cosmos w-100">
+                    <i class="fas fa-arrow-left me-2"></i>Вернуться в профиль
+                </a>
             </div>
-            <h4>{{ user.username }}</h4>
-            <p>{{ user.email }}</p>
-            <a href="{{ url_for('profile.profile') }}" class="btn btn-outline-cosmos btn-sm">
-                <i class="fas fa-arrow-left me-1"></i>Вернуться в профиль
-            </a>
-        </div>
-    </div>
-    
-    <div class="col-lg-8">
-        <div class="cosmos-card p-4 mb-4">
-            <h4 class="mb-4">
-                <i class="fas fa-user-edit text-danger me-2"></i>
-                Настройки профиля
-            </h4>
-            <form method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="update_profile" value="1">
-                {{ form.hidden_tag() }}
-                
-                <div class="mb-3">
-                    <label class="form-label">{{ form.username.label }}</label>
-                    {{ form.username(class="form-control") }}
-                    {% if form.username.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in form.username.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">{{ form.email.label }}</label>
-                    {{ form.email(class="form-control") }}
-                    {% if form.email.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in form.email.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">{{ form.avatar.label }}</label>
-                    {{ form.avatar(class="form-control", accept="image/*") }}
-                    {% if form.avatar.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in form.avatar.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <small>Рекомендуемый размер: 200x200 пикселей</small>
-                </div>
-                
-                {% if user.get_avatar() %}
-                <div class="mb-3 form-check">
-                    <input type="checkbox" name="remove_avatar" id="remove_avatar" value="1" class="form-check-input">
-                    <label class="form-check-label" for="remove_avatar">Удалить текущий аватар</label>
-                </div>
-                {% endif %}
-                
-                <button type="submit" class="btn btn-cosmos">Сохранить изменения</button>
-            </form>
         </div>
         
-        <div class="cosmos-card p-4">
-            <h4 class="mb-4">
-                <i class="fas fa-key text-danger me-2"></i>
-                Смена пароля
-            </h4>
-            <form method="POST">
-                <input type="hidden" name="change_password" value="1">
-                {{ password_form.hidden_tag() }}
-                
-                <div class="mb-3">
-                    <label class="form-label">{{ password_form.current_password.label }}</label>
-                    {{ password_form.current_password(class="form-control") }}
-                    {% if password_form.current_password.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in password_form.current_password.errors %}
-                                {{ error }}
-                            {% endfor %}
+        <!-- Правая колонка - настройки -->
+        <div class="col-lg-8">
+            <!-- Вкладки -->
+            <div class="settings-tabs">
+                <button class="tab-btn active" data-tab="profile-tab">
+                    <i class="fas fa-user-circle me-2"></i>Профиль
+                </button>
+                <button class="tab-btn" data-tab="password-tab">
+                    <i class="fas fa-lock me-2"></i>Безопасность
+                </button>
+            </div>
+            
+            <!-- Вкладка Профиль -->
+            <div id="profile-tab" class="tab-content active">
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-user-edit"></i>
                         </div>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">{{ password_form.new_password.label }}</label>
-                    {{ password_form.new_password(class="form-control") }}
-                    {% if password_form.new_password.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in password_form.new_password.errors %}
-                                {{ error }}
-                            {% endfor %}
+                        <div>
+                            <h4>Настройки профиля</h4>
+                            <p>Измените информацию о себе</p>
                         </div>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">{{ password_form.confirm_new_password.label }}</label>
-                    {{ password_form.confirm_new_password(class="form-control") }}
-                    {% if password_form.confirm_new_password.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in password_form.confirm_new_password.errors %}
-                                {{ error }}
-                            {% endfor %}
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="update_profile" value="1">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user me-1"></i>
+                                {{ form.username.label }}
+                            </label>
+                            {{ form.username(class="form-control modern-input") }}
+                            {% if form.username.errors %}
+                                <div class="form-error">
+                                    {% for error in form.username.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
-                    {% endif %}
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-envelope me-1"></i>
+                                {{ form.email.label }}
+                            </label>
+                            {{ form.email(class="form-control modern-input") }}
+                            {% if form.email.errors %}
+                                <div class="form-error">
+                                    {% for error in form.email.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-image me-1"></i>
+                                {{ form.avatar.label }}
+                            </label>
+                            <div class="avatar-upload">
+                                <label for="avatarInput" class="avatar-upload-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Выберите изображение</span>
+                                </label>
+                                {{ form.avatar(class="avatar-input", id="avatarInput", accept="image/*") }}
+                                <span class="file-name" id="fileName">Файл не выбран</span>
+                            </div>
+                            <small class="form-hint">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Рекомендуемый размер: 200x200 пикселей (PNG, JPG, GIF, WEBP)
+                            </small>
+                            {% if form.avatar.errors %}
+                                <div class="form-error">
+                                    {% for error in form.avatar.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if user.get_avatar() %}
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="remove_avatar_checkbox" value="1" id="removeAvatar">
+                                <span class="checkmark"></span>
+                                <span class="checkbox-text">
+                                    <i class="fas fa-trash-alt me-1"></i>
+                                    Удалить текущий аватар
+                                </span>
+                            </label>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save">
+                                <i class="fas fa-save me-2"></i>Сохранить изменения
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                
-                <button type="submit" class="btn btn-outline-cosmos">Сменить пароль</button>
-            </form>
+            </div>
+            
+            <!-- Вкладка Безопасность -->
+            <div id="password-tab" class="tab-content">
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h4>Смена пароля</h4>
+                            <p>Обновите пароль для безопасности аккаунта</p>
+                        </div>
+                    </div>
+                    
+                    <form method="POST">
+                        <input type="hidden" name="change_password" value="1">
+                        {{ password_form.hidden_tag() }}
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-key me-1"></i>
+                                {{ password_form.current_password.label }}
+                            </label>
+                            <div class="password-input-wrapper">
+                                {{ password_form.current_password(class="form-control modern-input", id="currentPassword") }}
+                                <button type="button" class="password-eye" data-target="currentPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {% if password_form.current_password.errors %}
+                                <div class="form-error">
+                                    {% for error in password_form.current_password.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-lock me-1"></i>
+                                {{ password_form.new_password.label }}
+                            </label>
+                            <div class="password-input-wrapper">
+                                {{ password_form.new_password(class="form-control modern-input", id="newPassword") }}
+                                <button type="button" class="password-eye" data-target="newPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar"></div>
+                                <span class="strength-text"></span>
+                            </div>
+                            {% if password_form.new_password.errors %}
+                                <div class="form-error">
+                                    {% for error in password_form.new_password.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-check-circle me-1"></i>
+                                {{ password_form.confirm_new_password.label }}
+                            </label>
+                            <div class="password-input-wrapper">
+                                {{ password_form.confirm_new_password(class="form-control modern-input", id="confirmPassword") }}
+                                <button type="button" class="password-eye" data-target="confirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-match" id="passwordMatch"></div>
+                            {% if password_form.confirm_new_password.errors %}
+                                <div class="form-error">
+                                    {% for error in password_form.confirm_new_password.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save">
+                                <i class="fas fa-key me-2"></i>Сменить пароль
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Минимум JS для работы интерфейса -->
+<script>
+(function() {
+    // Переключение вкладок
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.dataset.tab;
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+    
+    // Показ/скрытие пароля
+    document.querySelectorAll('.password-eye').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            const input = document.getElementById(targetId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    });
+    
+    // Имя выбранного файла
+    const avatarInput = document.getElementById('avatarInput');
+    const fileNameSpan = document.getElementById('fileName');
+    if (avatarInput && fileNameSpan) {
+        avatarInput.addEventListener('change', (e) => {
+            fileNameSpan.textContent = e.target.files[0]?.name || 'Файл не выбран';
+        });
+    }
+    
+    // Индикатор сложности пароля
+    const newPassword = document.getElementById('newPassword');
+    const strengthBar = document.querySelector('.strength-bar');
+    const strengthText = document.querySelector('.strength-text');
+    
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 6) strength++;
+        if (password.length >= 10) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        return Math.min(strength, 4);
+    }
+    
+    if (newPassword && strengthBar && strengthText) {
+        newPassword.addEventListener('input', () => {
+            const password = newPassword.value;
+            const strength = checkPasswordStrength(password);
+            const colors = ['#f44336', '#ff9800', '#ffc107', '#4caf50', '#4caf50'];
+            const texts = ['Очень слабый', 'Слабый', 'Средний', 'Хороший', 'Отличный'];
+            const width = (strength / 4) * 100;
+            strengthBar.style.setProperty('--strength-width', width + '%');
+            const style = document.createElement('style');
+            style.textContent = `.strength-bar::before { width: ${width}%; background: ${colors[strength]}; }`;
+            document.head.appendChild(style);
+            strengthText.textContent = password.length ? texts[strength] : '';
+        });
+    }
+    
+    // Проверка совпадения паролей
+    const confirmPassword = document.getElementById('confirmPassword');
+    const passwordMatch = document.getElementById('passwordMatch');
+    
+    if (newPassword && confirmPassword && passwordMatch) {
+        function checkMatch() {
+            if (!confirmPassword.value.length) {
+                passwordMatch.textContent = '';
+                return;
+            }
+            if (newPassword.value === confirmPassword.value) {
+                passwordMatch.innerHTML = '<i class="fas fa-check-circle me-1"></i>Пароли совпадают';
+                passwordMatch.className = 'password-match match-success';
+            } else {
+                passwordMatch.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>Пароли не совпадают';
+                passwordMatch.className = 'password-match match-error';
+            }
+        }
+        confirmPassword.addEventListener('input', checkMatch);
+        newPassword.addEventListener('input', checkMatch);
+    }
+})();
+</script>
 {% endblock %}

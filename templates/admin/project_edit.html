@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<h2 class="mb-4">
+    <i class="fas fa-edit text-danger me-2"></i>
+    Редактировать проект: {{ project.title }}
+</h2>
+
+<div class="cosmos-card p-4">
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        
+        <!-- Основная информация -->
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label class="form-label">{{ form.title.label }} <span class="text-danger">*</span></label>
+                {{ form.title(class="form-control") }}
+                {% if form.title.errors %}
+                    <div class="text-danger small mt-1">{% for error in form.title.errors %}{{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">{{ form.year.label }} <span class="text-danger">*</span></label>
+                {{ form.year(class="form-control") }}
+                {% if form.year.errors %}
+                    <div class="text-danger small mt-1">{% for error in form.year.errors %}{{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.mission_type.label }} <span class="text-danger">*</span></label>
+                {{ form.mission_type(class="form-control") }}
+                {% if form.mission_type.errors %}
+                    <div class="text-danger small mt-1">{% for error in form.mission_type.errors %}{{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">{{ form.status.label }}</label>
+                {{ form.status(class="form-select") }}
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">{{ form.sort_order.label }}</label>
+                {{ form.sort_order(class="form-control", type="number") }}
+                <small>Меньше число = выше в списке</small>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.short_description.label }} <span class="text-danger">*</span></label>
+            {{ form.short_description(class="form-control", rows="2") }}
+            {% if form.short_description.errors %}
+                <div class="text-danger small mt-1">{% for error in form.short_description.errors %}{{ error }}{% endfor %}</div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.description_full.label }} <span class="text-danger">*</span></label>
+            {{ form.description_full(class="form-control", rows="8") }}
+            {% if form.description_full.errors %}
+                <div class="text-danger small mt-1">{% for error in form.description_full.errors %}{{ error }}{% endfor %}</div>
+            {% endif %}
+            <small>Поддерживается HTML разметка</small>
+        </div>
+        
+        <!-- Цели и партнёры -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.goals.label }}</label>
+                {{ form.goals(class="form-control", rows="5") }}
+                <small>Каждая цель с новой строки</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.partners.label }}</label>
+                {{ form.partners(class="form-control", rows="5") }}
+                <small>Каждый партнёр с новой строки</small>
+            </div>
+        </div>
+        
+        <!-- Хронология -->
+        <div class="mb-3">
+            <label class="form-label">{{ form.updates.label }}</label>
+            {{ form.updates(class="form-control", rows="5") }}
+            <small>Формат: <strong>Дата | Описание события</strong> (каждая запись с новой строки)</small>
+        </div>
+        
+        <!-- Текущее изображение -->
+        <div class="mb-3">
+            <label class="form-label">Текущее изображение</label>
+            {% if project.get_image() %}
+            <div class="mt-2 mb-3">
+                <img src="{{ project.get_image() }}" style="max-height: 150px; border-radius: 10px;" id="currentImage">
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" name="remove_image" id="remove_image" value="1" class="form-check-input">
+                <label class="form-check-label text-danger" for="remove_image">Удалить текущее изображение</label>
+            </div>
+            {% else %}
+            <div class="alert alert-secondary">Изображение отсутствует</div>
+            {% endif %}
+        </div>
+        
+        <!-- Новое изображение -->
+        <div class="mb-3">
+            <label class="form-label">{{ form.image.label }} (новое изображение)</label>
+            {{ form.image(class="form-control", accept="image/*", id="newImageInput") }}
+            <div id="newImagePreview" class="mt-2" style="display: none;">
+                <img id="previewNew" style="max-height: 200px; border-radius: 10px;">
+                <p class="small mt-1">Новое изображение заменит текущее</p>
+            </div>
+            {% if form.image.errors %}
+                <div class="text-danger small mt-1">{% for error in form.image.errors %}{{ error }}{% endfor %}</div>
+            {% endif %}
+        </div>
+        
+        <!-- Активность -->
+        <div class="mb-3 form-check">
+            {{ form.is_active(class="form-check-input") }}
+            <label class="form-check-label">{{ form.is_active.label }}</label>
+            <small class="d-block text-muted">Если снять галочку, проект не будет отображаться на сайте</small>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Информация о проекте:</strong>
+            <ul class="mb-0 mt-2">
+                <li>Создан: {{ project.created_at.strftime('%d.%m.%Y %H:%M') if project.created_at else '—' }}</li>
+                <li>ID проекта: {{ project.id }}</li>
+                <li>Последнее обновление: {{ project.updated_at.strftime('%d.%m.%Y %H:%M') if project.updated_at else '—' }}</li>
+            </ul>
+        </div>
+        
+        <div class="text-end mt-4">
+            <a href="{{ url_for('admin.admin_projects') }}" class="btn btn-secondary">Отмена</a>
+            <button type="submit" class="btn btn-cosmos">Сохранить изменения</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('newImageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('previewNew').src = event.target.result;
+            document.getElementById('newImagePreview').style.display = 'block';
+            const currentImage = document.getElementById('currentImage');
+            if (currentImage) currentImage.style.opacity = '0.5';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('newImagePreview').style.display = 'none';
+        const currentImage = document.getElementById('currentImage');
+        if (currentImage) currentImage.style.opacity = '1';
+    }
+});
+</script>
+</div>
+{% endblock %}

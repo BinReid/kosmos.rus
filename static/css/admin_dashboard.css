@@ -1,0 +1,170 @@
+:root {
+    --accent-color: #bb2d3b;
+    --accent-rgb: 187, 45, 59;
+}
+
+/* Стили для статистических карточек */
+.stat-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-color);
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.stat-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background: rgba(187, 45, 59, 0.15);
+    color: var(--accent-color);
+}
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #aaa;
+}
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Russo One', cursive;
+    color: #fff;
+}
+.stat-link {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--accent-color);
+}
+.stat-link:hover {
+    background: rgba(187, 45, 59, 0.2);
+    transform: translateX(3px);
+    color: var(--accent-color);
+}
+
+/* Стили для графика */
+.active-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: inline-block;
+}
+.avg-dot {
+    width: 10px;
+    height: 10px;
+    background: #ffc107;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Стили для карточки факта */
+.fact-card {
+    background: linear-gradient(135deg, rgba(187, 45, 59, 0.12), rgba(187, 45, 59, 0.04));
+    border: 1px solid rgba(187, 45, 59, 0.25);
+}
+.fact-icon {
+    width: 45px;
+    height: 45px;
+    background: rgba(187, 45, 59, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--accent-color);
+}
+.fact-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #ddd;
+    font-style: italic;
+}
+
+/* Стили для детальной статистики */
+.stats-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.detail-item:last-child {
+    border-bottom: none;
+}
+.detail-label {
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.detail-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Russo One', cursive;
+}
+
+/* Кнопка с акцентным цветом */
+.btn-accent {
+    background: var(--accent-color);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    display: inline-block;
+    text-decoration: none;
+    font-family: 'Russo One', cursive;
+    color: white;
+}
+.btn-accent:hover {
+    background: #9e2531;
+    transform: scale(1.02);
+    color: white;
+}
+
+/* Общие улучшения */
+.cosmos-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+.cosmos-card:hover {
+    border-color: rgba(187, 45, 59, 0.3);
+}
+

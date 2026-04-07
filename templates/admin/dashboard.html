@@ -4,8 +4,10 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
         <h2 class="fw-bold m-0">
-            <i class="fas fa-rocket me-2" style="color: #bb2d3b;"></i>
-            Админ-центр <span class="text-muted fs-6 fw-normal">| Обзор системы</span>
+            <img src="{{ url_for('static', filename='img/logo-admin.svg') }}" 
+                 alt="Космос.Rus" 
+                 class="dashboard-logo-icon">
+            Админ-центр
         </h2>
     </div>
 
@@ -15,6 +17,7 @@
             {'label': 'Пользователи', 'count': stats.users_count, 'icon': 'fa-users', 'url': 'admin.users'},
             {'label': 'Новости', 'count': stats.news_count, 'icon': 'fa-newspaper', 'url': 'admin.news'},
             {'label': 'Тесты', 'count': stats.tests_count, 'icon': 'fa-question-circle', 'url': 'admin.tests'},
+            {'label': 'Проекты', 'count': stats.projects_count, 'icon': 'fa-rocket', 'url': 'admin.admin_projects'},
             {'label': 'Достижения', 'count': stats.achievements_count, 'icon': 'fa-trophy', 'url': 'admin.achievements'},
             {'label': 'ВУЗы', 'count': stats.universities_count, 'icon': 'fa-university', 'url': 'admin.admin_universities'},
             {'label': 'Направления', 'count': stats.directions_count, 'icon': 'fa-compass', 'url': 'admin.admin_directions'},
@@ -82,7 +85,7 @@
                             <h5 class="fw-bold m-0">Факт дня</h5>
                         </div>
                         <p class="fact-text mb-4">
-                            {{ daily_fact.fact if daily_fact else 'Космонавты видят 16 рассветов и закатов за сутки на МКС!' }}
+                            {{ fact.fact }}
                         </p>
                         <a href="{{ url_for('admin.fact') }}" class="btn btn-accent w-100">
                             <i class="fas fa-edit me-2"></i>Редактировать
@@ -139,6 +142,20 @@
 :root {
     --accent-color: #bb2d3b;
     --accent-rgb: 187, 45, 59;
+}
+
+/* Логотип в заголовке админ-панели */
+.dashboard-logo-icon {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-right: 12px;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+h2:hover .dashboard-logo-icon {
+    transform: scale(1.05);
 }
 
 /* Стили для статистических карточек */
@@ -304,6 +321,31 @@
 }
 .cosmos-card:hover {
     border-color: rgba(187, 45, 59, 0.3);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .dashboard-logo-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 8px;
+    }
+    
+    h2 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-logo-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 6px;
+    }
+    
+    h2 {
+        font-size: 1.2rem;
+    }
 }
 </style>
 

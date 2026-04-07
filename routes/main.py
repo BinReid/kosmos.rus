@@ -43,6 +43,73 @@ def index():
                          fact=daily_fact,
                          stats=stats)
 
+@main_bp.route('/space-elevator')
+def space_elevator():
+    """Космический лифт времени - интерактивная игра-хронология"""
+    return render_template('space_elevator.html')
+
+@main_bp.route('/api/elevator/achievements', methods=['GET'])
+def get_elevator_achievements():
+    """API для получения достижений пользователя в игре"""
+    if 'user_id' not in session:
+        return jsonify({'success': True, 'achievements': []})
+    
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({'success': True, 'achievements': []})
+    
+    # Получаем сохранённые достижения из базы (нужно добавить поле в модель User или отдельную таблицу)
+    achievements = user.get_elevator_achievements() if hasattr(user, 'get_elevator_achievements') else []
+    
+    return jsonify({'success': True, 'achievements': achievements})
+
+@main_bp.route('/api/elevator/save', methods=['POST'])
+def save_elevator_achievement():
+    """API для сохранения достижения"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Не авторизован'}), 401
+    
+    data = request.get_json()
+    event_id = data.get('event_id')
+    
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({'success': False, 'error': 'Пользователь не найден'}), 404
+    
+    # Сохраняем достижение (нужно добавить метод в модель User)
+    if hasattr(user, 'add_elevator_achievement'):
+        user.add_elevator_achievement(event_id)
+        db.session.commit()
+    
+    return jsonify({'success': True})
+
+@main_bp.route('/projects')
+def projects():
+    """Страница современных проектов"""
+    from models import Project
+    
+    # Получаем активные проекты из БД
+    projects_data = Project.query.filter_by(is_active=True).order_by(Project.sort_order, Project.created_at).all()
+    
+    return render_template('projects.html', projects=projects_data)
+
+@main_bp.route('/project/<int:project_id>')
+def project_detail(project_id):
+    """Детальная страница проекта"""
+    from models import Project
+    
+    project = Project.query.get_or_404(project_id)
+    
+    # Если проект не активен и пользователь не админ - 404
+    if not project.is_active:
+        user = None
+        if 'user_id' in session:
+            user = User.query.get(session['user_id'])
+        if not user or not user.is_admin:
+            return render_template('404.html'), 404
+    
+    return render_template('project_detail.html', project=project.to_dict())
+
 @main_bp.route('/news')
 def news_list():
     """Список новостей"""
@@ -126,3 +193,8 @@ def summarize_news(news_id):
             'success': False,
             'error': str(e)
         }), 500
+    
+@main_bp.route('/podcast')
+def podcast():
+    """О продукте"""
+    return render_template('podcast.html')

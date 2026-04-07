@@ -78,10 +78,14 @@ def test_submit(test_id):
     # Проверяем достижения
     AchievementManager.check_and_award(user, 'tests_passed')
     
-    # Проверяем на идеальный результат
+    # Проверяем достижения за результат теста
+    if percentage >= 80:
+        AchievementManager.check_and_award(user, 'test_passed_80', 80)
+
+    # Проверяем на идеальный результат (100%)
     if percentage == 100:
         AchievementManager.check_and_award(user, 'perfect_test', 100)
-    
+        
     # Обновляем уровень
     AchievementManager._update_level(user)
     db.session.commit()

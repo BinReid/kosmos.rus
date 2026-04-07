@@ -1,26 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<!-- ОРБИТАЛЬНОЕ МЕНЮ (ЦУП) -->
-    <div class="orbit-menu-container">
-        <div class="menu-center" id="menuToggle">
-            <div class="radar-circle"></div>
-            <div class="radar-dot"></div>
-            <span class="menu-label">ЦУП</span>
-        </div>
-        <ul class="orbit-items" id="orbitItems">
-            <li><a href="#hero" data-tooltip="На главную"><i class="fas fa-home"></i></a></li>
-            <li><a href="#news" data-tooltip="Новости"><i class="fas fa-newspaper"></i></a></li>
-            <li><a href="#stats" data-tooltip="Статистика"><i class="fas fa-chart-line"></i></a></li>
-            <li><a href="#career" data-tooltip="Карьера"><i class="fas fa-briefcase"></i></a></li>
-        </ul>
-    </div>
 <section id="hero" class="hero">
     <div class="hero-badge">
         <i class="fas fa-star-of-life me-1"></i> РОССИЯ — ВЕЛИКАЯ КОСМИЧЕСКАЯ ДЕРЖАВА
     </div>
-    <h2 class="glow-text">Космос начинается здесь</h2>
+    <h1 class="glow-text">Космос начинается здесь</h1>
     <p>Платформа для тех, кто стремится к звёздам. Новости, тесты, карьерный трек и всё о российской космонавтике.</p>
     <div class="hero-stats">
         <div class="stat">
@@ -41,7 +26,7 @@
 <!-- Факт дня -->
 <section class="content-sec">
     <div class="container">
-        <h3><i class="fas fa-star-of-life me-3"></i> Факт дня</h3>
+        <h2><i class="fas fa-star-of-life me-3"></i> Факт дня</h2>
         <div class="glass-card">
             <div class="row align-items-center">
                 {% if fact.get_image() %}
@@ -50,12 +35,10 @@
                 </div>
                 <div class="col-md-8">
                     <p class="lead" style="font-size: 1.3rem;">{{ fact.fact }}</p>
-                    <small class="text-muted">{{ fact.date.strftime('%d.%m.%Y') }}</small>
                 </div>
                 {% else %}
                 <div class="col-12">
                     <p class="lead" style="font-size: 1.3rem;">{{ fact.fact }}</p>
-                    <small class="text-muted">{{ fact.date.strftime('%d.%m.%Y') }}</small>
                 </div>
                 {% endif %}
             </div>
@@ -66,7 +49,6 @@
 <!-- Новости -->
 <section id="news" class="content-sec">
     <div class="container">
-        <h3><i class="fas fa-newspaper me-3"></i> Последние новости</h3>
         <div class="projects-grid">
             {% for item in news[:3] %}
             <div class="card">
@@ -97,46 +79,102 @@
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="glass-card" style="height: 100%;">
-                    <h4><i class="fas fa-globe-europe me-2"></i> Россия — космическая держава</h4>
+                    <div class="stats-card-header">
+                        <div class="stats-icon-wrapper">
+                            <i class="fas fa-globe-europe"></i>
+                        </div>
+                        <h4>Россия — космическая держава</h4>
+                    </div>
+                    
                     <div class="timeline">
-                        <div class="timeline-item"><span class="timeline-year">1957</span><span class="timeline-desc">Первый искусственный спутник Земли</span></div>
-                        <div class="timeline-item"><span class="timeline-year">1961</span><span class="timeline-desc">Первый полёт человека в космос (Юрий Гагарин)</span></div>
-                        <div class="timeline-item"><span class="timeline-year">1963</span><span class="timeline-desc">Первая женщина-космонавт (Валентина Терешкова)</span></div>
-                        <div class="timeline-item"><span class="timeline-year">1965</span><span class="timeline-desc">Первый выход в открытый космос (Алексей Леонов)</span></div>
-                        <div class="timeline-item"><span class="timeline-year">1986-2001</span><span class="timeline-desc">Орбитальная станция «Мир»</span></div>
+                        <div class="timeline-item">
+                            <span class="timeline-year">1957</span>
+                            <span class="timeline-desc">Первый искусственный спутник Земли</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-year">1961</span>
+                            <span class="timeline-desc">Первый полёт человека в космос (Юрий Гагарин)</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-year">1963</span>
+                            <span class="timeline-desc">Первая женщина-космонавт (Валентина Терешкова)</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-year">1965</span>
+                            <span class="timeline-desc">Первый выход в открытый космос (Алексей Леонов)</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-year">1986-2001</span>
+                            <span class="timeline-desc">Орбитальная станция «Мир»</span>
+                        </div>
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-6">
+                <!-- Правая карточка: Космическая статистика сегодня -->
                 <div class="glass-card" style="height: 100%;">
-                    <h4><i class="fas fa-chart-line me-2"></i> Космическая статистика сегодня</h4>
-                    <div class="mb-3"><i class="fas fa-rocket me-2"></i> Всего запусков: <strong>{{ stats.total_launches|default('более 3000') }}</strong></div>
-                    <div class="mb-3"><i class="fas fa-user-astronaut me-2"></i> Российские космонавты: <strong>{{ stats.cosmonauts|default('более 130') }}</strong></div>
-                    <div class="mb-3"><i class="fas fa-satellite me-2"></i> Спутников на орбите (РФ): <strong>{{ stats.satellites|default('~200') }}</strong></div>
-                    <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
-                    <div><i class="fas fa-space-station me-2"></i> МКС: Российский сегмент активно работает</div>
+                    <div class="stats-card-header">
+                        <div class="stats-icon-wrapper">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Космическая статистика сегодня</h4>
+                    </div>
+                    
+                    <div class="stats-list">
+                        <div class="stats-item">
+                            <div class="stats-item-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="stats-item-content">
+                                <span class="stats-item-label">Всего запусков</span>
+                                <span class="stats-item-value">{{ stats.total_launches|default('более 3000') }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-item">
+                            <div class="stats-item-icon">
+                                <i class="fas fa-user-astronaut"></i>
+                            </div>
+                            <div class="stats-item-content">
+                                <span class="stats-item-label">Российские космонавты</span>
+                                <span class="stats-item-value">{{ stats.cosmonauts|default('более 130') }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-item">
+                            <div class="stats-item-icon">
+                                <i class="fas fa-satellite"></i>
+                            </div>
+                            <div class="stats-item-content">
+                                <span class="stats-item-label">Спутников на орбите (РФ)</span>
+                                <span class="stats-item-value">{{ stats.satellites|default('~200') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-footer">
+                        <div class="stats-footer-icon">
+                            <i class="fas fa-space-station"></i>
+                        </div>
+                        <div class="stats-footer-text">
+                            <strong>МКС</strong> — Российский сегмент активно работает
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Карьерный трек (если пользователь авторизован) -->
 {% if session.user_id and session.user_age and session.user_age >= 16 %}
-<section id="career" class="content-sec">
+<section class="content-sec">
     <div class="container">
-        <h3><i class="fas fa-briefcase me-3"></i> Карьерный трек</h3>
-        <div class="glass-card">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h4>Стань частью космической отрасли</h4>
-                    <p>Персонализированные вакансии, тесты на профориентацию и стажировки в Роскосмосе.</p>
-                    <a href="{{ url_for('career.index') }}" class="btn-primary">Перейти в карьеру →</a>
-                </div>
-                <div class="col-md-4 text-center">
-                    <i class="fas fa-user-astronaut" style="font-size: 5rem; color: var(--russia-red);"></i>
-                </div>
-            </div>
+        <div class="glass-card text-center">
+            <i class="fas fa-headphones fa-3x mb-3" style="color: var(--russia-red);"></i>
+            <h4>Узнайте больше о космической тематике</h4>
+            <p>Специально для тебя мы приготовили новые подкасты, подключайся и слушай новые для себя открытия!</p>
+            <a href="/podcast" class="btn-primary">Хочу смотреть!</a>
         </div>
     </div>
 </section>

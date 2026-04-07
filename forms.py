@@ -301,3 +301,51 @@ class VacancyForm(FlaskForm):
     expires_at = DateField('Дата истечения', validators=[
         Optional()
     ], format='%Y-%m-%d')
+
+class ProjectForm(FlaskForm):
+    """Форма для создания/редактирования проекта"""
+    title = StringField('Название проекта', validators=[
+        DataRequired(message='Название обязательно'),
+        Length(min=3, max=200, message='Название должно быть от 3 до 200 символов')
+    ])
+    short_description = StringField('Краткое описание', validators=[
+        DataRequired(message='Краткое описание обязательно'),
+        Length(min=10, max=300, message='Краткое описание должно быть от 10 до 300 символов')
+    ])
+    description_full = TextAreaField('Полное описание', validators=[
+        DataRequired(message='Полное описание обязательно'),
+        Length(min=50, message='Полное описание должно быть не менее 50 символов')
+    ])
+    status = SelectField('Статус', choices=[
+        ('planned', 'В плане'),
+        ('active', 'Активен'),
+        ('completed', 'Завершён'),
+        ('paused', 'Приостановлен')
+    ], default='planned')
+    mission_type = StringField('Тип миссии', validators=[
+        DataRequired(message='Тип миссии обязателен'),
+        Length(max=100)
+    ])
+    year = StringField('Год запуска/реализации', validators=[
+        DataRequired(message='Год обязателен'),
+        Length(max=20)
+    ])
+    goals = TextAreaField('Цели проекта (каждая с новой строки)', validators=[
+        Optional()
+    ])
+    partners = TextAreaField('Партнёры (каждый с новой строки)', validators=[
+        Optional()
+    ])
+    updates = TextAreaField('Хронология (формат: Дата | Текст, каждая запись с новой строки)', validators=[
+        Optional()
+    ])
+    sort_order = IntegerField('Порядок сортировки', validators=[
+        Optional(),
+        NumberRange(min=0)
+    ], default=0)
+    is_active = BooleanField('Активен (отображать на сайте)', default=True)
+    image = FileField('Изображение', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Разрешены только изображения!'),
+        Optional()
+    ])
+    remove_image = HiddenField('Удалить изображение', default='0')

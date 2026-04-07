@@ -1,0 +1,1170 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Скрываем футер */
+    .footer {
+        display: none !important;
+    }
+    
+    /* Убираем прокрутку у body */
+    body {
+        overflow: hidden !important;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Основной контейнер игры с отступом от хедера */
+    .space-elevator-fullscreen {
+        position: fixed;
+        top: 75px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(ellipse at center, #0a0a2a 0%, #000000 100%);
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    /* Звёздный фон */
+    .space-elevator-fullscreen::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 10% 20%, #fff, rgba(0,0,0,0)),
+            radial-gradient(1px 1px at 30% 70%, #fff, rgba(0,0,0,0)),
+            radial-gradient(2px 2px at 70% 40%, #fff, rgba(0,0,0,0)),
+            radial-gradient(1px 1px at 90% 80%, #fff, rgba(0,0,0,0));
+        background-size: 300px 300px, 200px 200px, 250px 250px, 150px 150px;
+        background-repeat: repeat;
+        opacity: 0.6;
+        pointer-events: none;
+        animation: elevatorStarsMove 40s linear infinite;
+    }
+    
+    @keyframes elevatorStarsMove {
+        from { transform: translateY(0); }
+        to { transform: translateY(-100px); }
+    }
+    
+    /* ===== ОСНОВНАЯ СЕТКА ===== */
+    .elevator-main-grid {
+        display: grid;
+        grid-template-columns: 320px 1fr 300px;
+        gap: 20px;
+        height: 100%;
+        padding: 20px 24px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* Стеклянные панели - уникальное имя для избежания конфликтов */
+    .elevator-glass-panel {
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(12px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Левая панель */
+    .elevator-timeline-panel {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(12px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .elevator-panel-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(230, 57, 70, 0.3);
+    }
+    
+    .elevator-panel-header i {
+        font-size: 1.2rem;
+        color: #e63946;
+    }
+    
+    .elevator-panel-header h3 {
+        font-size: 1rem;
+        color: #fff;
+        margin: 0;
+        font-weight: 500;
+        flex: 1;
+    }
+    
+    .elevator-panel-close-mobile {
+        display: none;
+        background: rgba(230, 57, 70, 0.2);
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        color: #e63946;
+        cursor: pointer;
+    }
+    
+    /* Хронология */
+    .elevator-timeline-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 100%;
+    }
+    
+    .elevator-timeline-event {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+    }
+    
+    .elevator-timeline-event:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(4px);
+    }
+    
+    .elevator-timeline-event.active {
+        background: linear-gradient(90deg, rgba(230, 57, 70, 0.2), transparent);
+        border-left-color: #e63946;
+    }
+    
+    .elevator-event-year {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #e63946;
+        font-family: monospace;
+        min-width: 50px;
+    }
+    
+    .elevator-event-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(230, 57, 70, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #e63946;
+    }
+    
+    .elevator-event-name {
+        flex: 1;
+        font-size: 0.8rem;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .elevator-event-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .elevator-event-detail-btn {
+        background: rgba(230, 57, 70, 0.2);
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        color: #e63946;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    
+    .elevator-event-detail-btn:hover {
+        background: rgba(230, 57, 70, 0.4);
+        transform: scale(1.05);
+    }
+    
+    .elevator-event-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #2c3e50;
+    }
+    
+    .elevator-event-status-dot.visited-dot {
+        background: #ffd700;
+        box-shadow: 0 0 4px #ffd700;
+    }
+    
+    .elevator-event-status-dot.active-dot {
+        background: #e63946;
+        box-shadow: 0 0 6px #e63946;
+        animation: elevatorDotPulse 1s infinite;
+    }
+    
+    @keyframes elevatorDotPulse {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+    }
+    
+    /* Центральная область - лифт */
+    .elevator-area {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
+    
+    .elevator-mobile-timeline-btn {
+        display: none;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(230, 57, 70, 0.3);
+        color: #e63946;
+        padding: 8px 14px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        z-index: 15;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .elevator-shaft-wrapper {
+        flex: 1;
+        position: relative;
+        background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+        border-radius: 28px;
+        overflow: hidden;
+        border: 1px solid rgba(230, 57, 70, 0.25);
+        min-height: 0;
+    }
+    
+    .elevator-shaft-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+            90deg,
+            transparent 0%,
+            transparent 47%,
+            rgba(230, 57, 70, 0.06) 47%,
+            rgba(230, 57, 70, 0.06) 53%,
+            transparent 53%,
+            transparent 100%
+        );
+    }
+    
+    .elevator-shaft-lights {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%);
+    }
+    
+    /* Кабина лифта */
+    .elevator-cab {
+        position: absolute;
+        width: 90%;
+        left: 5%;
+        transition: bottom 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        z-index: 10;
+    }
+    
+    .elevator-cab-body {
+        background: rgba(20, 30, 55, 0.85);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(230, 57, 70, 0.5);
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(230, 57, 70, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    
+    .elevator-cab-window {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+    }
+    
+    .elevator-astronaut-figure {
+        width: 50px;
+        height: auto;
+        filter: drop-shadow(0 0 8px rgba(230, 57, 70, 0.5));
+        animation: elevatorAstronautFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes elevatorAstronautFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+    
+    .elevator-cab-level-badge {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #e63946;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-family: monospace;
+        min-width: 45px;
+        text-align: center;
+        letter-spacing: 1px;
+    }
+    
+    /* Маркеры этажей */
+    .elevator-level-markers {
+        position: absolute;
+        right: 12px;
+        top: 20px;
+        bottom: 20px;
+        width: 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        pointer-events: none;
+    }
+    
+    .elevator-level-marker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+    
+    .elevator-marker-circle {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transition: all 0.2s;
+    }
+    
+    .elevator-marker-circle.current {
+        background: #e63946;
+        box-shadow: 0 0 10px #e63946;
+        animation: elevatorMarkerPulse 1s infinite;
+    }
+    
+    .elevator-marker-circle.completed {
+        background: #ffd700;
+        box-shadow: 0 0 6px #ffd700;
+    }
+    
+    .elevator-marker-label {
+        font-size: 7px;
+        color: #8ea3b3;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+    }
+    
+    @keyframes elevatorMarkerPulse {
+        0%, 100% { opacity: 0.6; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+    }
+    
+    /* Панель управления */
+    .elevator-control-bar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        padding: 14px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 60px;
+        margin-top: 14px;
+    }
+    
+    .elevator-nav-btn {
+        background: linear-gradient(135deg, #e63946, #b91c2c);
+        border: none;
+        color: white;
+        padding: 10px 28px;
+        border-radius: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+    
+    .elevator-nav-btn:active {
+        transform: scale(0.96);
+    }
+    
+    .elevator-level-counter {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #e63946;
+        background: rgba(0,0,0,0.5);
+        padding: 6px 20px;
+        border-radius: 40px;
+        font-family: monospace;
+    }
+    
+    /* Правая панель - информация */
+    .elevator-info-panel {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(12px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .elevator-info-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(230, 57, 70, 0.3);
+    }
+    
+    .elevator-info-header i {
+        font-size: 1.2rem;
+        color: #e63946;
+    }
+    
+    .elevator-info-header h3 {
+        font-size: 1rem;
+        color: #fff;
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    .elevator-current-event-info {
+        flex: 1;
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: flex-start;
+    }
+    
+    .elevator-current-year {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #e63946, #ff6b6b);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-family: 'Russo One', cursive;
+        margin-bottom: 8px;
+    }
+    
+    .elevator-current-title {
+        font-size: 1rem;
+        color: #fff;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .elevator-current-short-desc {
+        font-size: 0.8rem;
+        color: #b0c4de;
+        margin-bottom: 16px;
+        line-height: 1.4;
+    }
+    
+    .elevator-details-info-btn {
+        background: rgba(230, 57, 70, 0.2);
+        border: 1px solid rgba(230, 57, 70, 0.5);
+        color: #e63946;
+        padding: 8px 16px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+        width: 100%;
+    }
+    
+    .elevator-details-info-btn:hover {
+        background: rgba(230, 57, 70, 0.4);
+        transform: scale(1.02);
+    }
+    
+    .elevator-global-progress {
+        padding: 12px 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        margin-top: auto;
+    }
+    
+    .elevator-progress-track {
+        height: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .elevator-progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #e63946, #ffd700);
+        border-radius: 10px;
+        transition: width 0.3s;
+    }
+    
+    .elevator-progress-stats {
+        text-align: center;
+        margin-top: 8px;
+        font-size: 0.75rem;
+        color: #e63946;
+    }
+    
+    /* Модальное окно */
+    .elevator-event-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(6px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .elevator-event-modal.active-modal {
+        display: flex;
+    }
+    
+    .elevator-modal-card {
+        max-width: 480px;
+        width: 90%;
+        max-height: 85vh;
+        padding: 28px;
+        position: relative;
+        overflow-y: auto;
+        background: rgba(10, 10, 30, 0.95);
+        backdrop-filter: blur(12px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .elevator-modal-closer {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(230, 57, 70, 0.2);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: #e63946;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .elevator-modal-closer:hover {
+        background: rgba(230, 57, 70, 0.4);
+    }
+    
+    .elevator-modal-year-display {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #e63946, #ff6b6b);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+    }
+    
+    .elevator-modal-title-display {
+        font-size: 1.4rem;
+        color: #fff;
+        margin-bottom: 16px;
+    }
+    
+    .elevator-modal-description-text {
+        color: #b0c4de;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 18px;
+    }
+    
+    .elevator-modal-facts-list {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 18px;
+    }
+    
+    .elevator-modal-fact-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #8ea3b3;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    
+    .elevator-modal-fact-item i {
+        color: #e63946;
+        width: 18px;
+        font-size: 10px;
+    }
+    
+    /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+    @media (max-width: 900px) {
+        .elevator-main-grid {
+            grid-template-columns: 280px 1fr;
+            gap: 16px;
+            padding: 16px;
+        }
+        
+        .elevator-info-panel {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            max-height: 180px;
+            z-index: 20;
+        }
+        
+        .elevator-current-event-info {
+            padding: 12px 16px;
+        }
+        
+        .elevator-current-year {
+            font-size: 2rem;
+        }
+        
+        .elevator-current-title {
+            font-size: 0.9rem;
+        }
+        
+        .elevator-current-short-desc {
+            font-size: 0.75rem;
+        }
+        
+        .elevator-details-info-btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .space-elevator-fullscreen {
+            top: 90px;
+        }
+        
+        .elevator-main-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
+            gap: 12px;
+            padding: 12px;
+            height: auto;
+            min-height: 100%;
+        }
+        
+        .elevator-area {
+            grid-row: 1;
+            min-height: 320px;
+            max-height: 380px;
+        }
+        
+        .elevator-shaft-wrapper {
+            min-height: 220px;
+            border-radius: 20px;
+        }
+        
+        .elevator-cab-body {
+            padding: 8px 12px;
+        }
+        
+        .elevator-astronaut-figure {
+            width: 36px;
+        }
+        
+        .elevator-cab-level-badge {
+            font-size: 0.9rem;
+            padding: 4px 10px;
+            min-width: 38px;
+        }
+        
+        .elevator-control-bar {
+            padding: 10px;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .elevator-nav-btn {
+            padding: 8px 20px;
+        }
+        
+        .elevator-nav-btn span {
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+        
+        .elevator-nav-btn i {
+            font-size: 1rem;
+        }
+        
+        .elevator-level-counter {
+            font-size: 1.2rem;
+            padding: 4px 16px;
+        }
+        
+        .elevator-info-panel {
+            position: relative;
+            bottom: auto;
+            left: auto;
+            right: auto;
+            margin-top: 0;
+            max-height: 200px;
+            grid-row: 2;
+        }
+        
+        .elevator-current-event-info {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            gap: 8px;
+            padding: 12px 16px;
+        }
+        
+        .elevator-current-year {
+            font-size: 1.6rem;
+            margin-bottom: 0;
+            min-width: 70px;
+        }
+        
+        .elevator-current-title {
+            font-size: 0.85rem;
+            margin-bottom: 0;
+            flex: 2;
+        }
+        
+        .elevator-current-short-desc {
+            font-size: 0.7rem;
+            margin-bottom: 0;
+            width: 100%;
+            order: 3;
+        }
+        
+        .elevator-details-info-btn {
+            width: auto;
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            order: 2;
+            white-space: nowrap;
+        }
+        
+        .elevator-global-progress {
+            padding: 8px 16px;
+        }
+        
+        /* Левая панель (мобильное меню) */
+        .elevator-timeline-panel {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            border-radius: 0;
+            margin: 0;
+        }
+        
+        .elevator-timeline-panel.open {
+            transform: translateX(0);
+        }
+        
+        .elevator-panel-close-mobile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .elevator-mobile-timeline-btn {
+            display: flex;
+        }
+        
+        .elevator-timeline-list {
+            max-height: 100%;
+        }
+        
+        .elevator-level-markers {
+            right: 8px;
+            width: 28px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .elevator-area {
+            min-height: 280px;
+            max-height: 340px;
+        }
+        
+        .elevator-shaft-wrapper {
+            min-height: 200px;
+        }
+        
+        .elevator-astronaut-figure {
+            width: 30px;
+        }
+        
+        .elevator-cab-level-badge {
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            min-width: 32px;
+        }
+        
+        .elevator-cab-body {
+            padding: 6px 10px;
+        }
+        
+        .elevator-nav-btn {
+            padding: 6px 16px;
+        }
+        
+        .elevator-nav-btn span {
+            display: none;
+        }
+        
+        .elevator-nav-btn i {
+            font-size: 1.2rem;
+        }
+        
+        .elevator-level-counter {
+            font-size: 1rem;
+            padding: 4px 12px;
+        }
+        
+        .elevator-current-event-info {
+            padding: 10px 12px;
+        }
+        
+        .elevator-current-year {
+            font-size: 1.4rem;
+            min-width: 60px;
+        }
+        
+        .elevator-current-title {
+            font-size: 0.75rem;
+        }
+        
+        .elevator-current-short-desc {
+            font-size: 0.65rem;
+        }
+        
+        .elevator-details-info-btn {
+            padding: 4px 10px;
+            font-size: 0.65rem;
+        }
+        
+        .elevator-level-markers {
+            right: 4px;
+            width: 24px;
+        }
+        
+        .elevator-marker-label {
+            font-size: 6px;
+        }
+    }
+</style>
+
+<div class="space-elevator-fullscreen">
+    <div class="elevator-main-grid">
+        <!-- Левая панель - хронология -->
+        <div class="elevator-timeline-panel" id="timelinePanel">
+            <div class="elevator-panel-header">
+                <i class="fas fa-timeline"></i>
+                <h3>Хронология побед</h3>
+                <button class="elevator-panel-close-mobile" id="closeTimelineBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="elevator-timeline-list" id="timelineList"></div>
+        </div>
+        
+        <!-- Центр - лифт -->
+        <div class="elevator-area">
+            <div class="elevator-shaft-wrapper" id="shaftWrapper">
+                <div class="elevator-shaft-back"></div>
+                <div class="elevator-shaft-lights"></div>
+                
+                <!-- Кабина лифта -->
+                <div class="elevator-cab" id="elevatorCab">
+                    <div class="elevator-cab-body">
+                        <div class="elevator-cab-window">
+                            <img src="{{ url_for('static', filename='img/astronaut.svg') }}" class="elevator-astronaut-figure" alt="Космонавт" onerror="this.src='https://via.placeholder.com/50?text=🚀'">
+                        </div>
+                        <div class="elevator-cab-level-badge" id="cabLevelBadge">1</div>
+                    </div>
+                </div>
+                
+                <!-- Маркеры этажей -->
+                <div class="elevator-level-markers" id="levelMarkers"></div>
+            </div>
+            
+            <!-- Управление -->
+            <div class="elevator-control-bar">
+                <button class="elevator-nav-btn up-nav" id="upNavBtn">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>ВВЕРХ</span>
+                </button>
+                <div class="elevator-level-counter">
+                    <span id="currentLevelNum">1</span>
+                    <span>/</span>
+                    <span id="totalLevelsNum">6</span>
+                </div>
+                <button class="elevator-nav-btn down-nav" id="downNavBtn">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>ВНИЗ</span>
+                </button>
+            </div>
+            
+            <!-- Кнопка показа хронологии на мобильных -->
+            <button class="elevator-mobile-timeline-btn" id="showTimelineBtn">
+                <i class="fas fa-timeline"></i>
+                <span>Хронология</span>
+            </button>
+        </div>
+        
+        <!-- Правая панель - информация о текущем событии -->
+        <div class="elevator-info-panel" id="infoPanel">
+            <div class="elevator-info-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>Текущий этап</h3>
+            </div>
+            <div class="elevator-current-event-info">
+                <div class="elevator-current-year" id="currentYear">1957</div>
+                <div class="elevator-current-title" id="currentTitle">Первый искусственный спутник Земли</div>
+                <div class="elevator-current-short-desc" id="currentShortDesc">Запуск «Спутника-1» — начало космической эры</div>
+                <button class="elevator-details-info-btn" id="detailsInfoBtn">
+                    <i class="fas fa-info-circle"></i>
+                    Подробнее о событии
+                </button>
+            </div>
+            <div class="elevator-global-progress">
+                <div class="elevator-progress-track">
+                    <div class="elevator-progress-bar-fill" id="globalProgressFill" style="width: 0%"></div>
+                </div>
+                <div class="elevator-progress-stats" id="progressStats">0/6</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div class="elevator-event-modal" id="eventModal">
+    <div class="elevator-modal-card">
+        <button class="elevator-modal-closer" id="modalCloser">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="elevator-modal-year-display" id="modalYearDisplay">1957</div>
+        <h2 class="elevator-modal-title-display" id="modalTitleDisplay">Первый спутник</h2>
+        <div class="elevator-modal-description-text" id="modalDescriptionText"></div>
+        <div class="elevator-modal-facts-list" id="modalFactsList"></div>
+    </div>
+</div>
+
+<script>
+const eventsData = [
+    { id: 1, year: "1957", title: "Первый искусственный спутник Земли", shortTitle: "Спутник-1", shortDesc: "Запуск «Спутника-1» — начало космической эры",
+        fullDesc: "Советский Союз запустил «Спутник-1» — первый в мире искусственный спутник Земли. Аппарат в форме шара диаметром 58 см передавал радиосигналы. Он находился на орбите 92 дня, совершил 1440 оборотов вокруг Земли. Этот день считается началом космической эры человечества.",
+        facts: ["Сигналы спутника могли принимать радиолюбители по всему миру", "Спутник прекратил существование 4 января 1958 года", "Работа над ним заняла менее трёх месяцев"] },
+    { id: 2, year: "1961", title: "Первый полёт человека в космос", shortTitle: "Гагарин", shortDesc: "Юрий Гагарин — первый человек в космосе",
+        fullDesc: "Юрий Гагарин на корабле «Восток-1» облетел Землю за 108 минут. Старт состоялся с космодрома Байконур. Максимальная высота орбиты — 327 км. Полёт доказал возможность безопасного полёта человека в космос.",
+        facts: ["Перед стартом Гагарин произнёс фразу «Поехали!»", "На орбите он проводил простейшие эксперименты", "Из-за нештатной ситуации тормозная система включилась с задержкой"] },
+    { id: 3, year: "1963", title: "Первая женщина-космонавт", shortTitle: "Терешкова", shortDesc: "Валентина Терешкова — первая женщина в космосе",
+        fullDesc: "Валентина Терешкова на корабле «Восток-6» провела в космосе 2 суток 22 часа 50 минут, совершив 48 оборотов вокруг Земли. Полёт опроверг мнение, что женщины не могут переносить космические нагрузки.",
+        facts: ["Терешкова — единственная женщина, совершившая одиночный космический полёт", "Из-за ошибки ориентации корабль начал подниматься вверх", "Во время полёта она вела бортовой журнал"] },
+    { id: 4, year: "1965", title: "Первый выход в открытый космос", shortTitle: "Леонов", shortDesc: "Алексей Леонов — первый выход в открытый космос",
+        fullDesc: "Алексей Леонов на корабле «Восход-2» покинул шлюзовую камеру и находился в открытом космосе 12 минут 9 секунд. Использовался скафандр «Беркут» с автономной системой жизнеобеспечения.",
+        facts: ["Из-за разницы давления скафандр раздулся", "Рискуя здоровьем, Леонов сбросил давление", "Леонов был ещё и профессиональным художником"] },
+    { id: 5, year: "1970", title: "Первый Луноход", shortTitle: "Луноход-1", shortDesc: "«Луноход-1» — первый планетоход",
+        fullDesc: "Станция «Луна-17» доставила на Луну самоходный аппарат «Луноход-1» массой 756 кг. Луноход проехал 10,5 км, передал более 200 панорам и проработал 322 дня при плановом сроке 90 дней.",
+        facts: ["Скорость передвижения — до 2 км/ч", "Аппарат изучал состав грунта и магнитное поле", "Проработал в 3,5 раза дольше плана"] },
+    { id: 6, year: "1971", title: "Первая орбитальная станция", shortTitle: "Салют", shortDesc: "«Салют» — первая орбитальная станция",
+        fullDesc: "Станция массой 18,5 тонны была выведена на орбиту ракетой «Протон-К». «Салют» стал первой в мире долговременной орбитальной станцией, где космонавты могли жить и работать неделями.",
+        facts: ["К станции дважды пристыковывались экипажи", "Объём жилых отсеков — около 100 м³", "Программа включала 7 модификаций"] }
+];
+
+let currentLevel = 0;
+let visitedLevels = [];
+let isMoving = false;
+
+function loadProgress() {
+    const saved = localStorage.getItem('space_elevator_visited');
+    if (saved) visitedLevels = JSON.parse(saved);
+    updateAll();
+}
+
+function saveProgress(eventId) {
+    if (!visitedLevels.includes(eventId)) {
+        visitedLevels.push(eventId);
+        localStorage.setItem('space_elevator_visited', JSON.stringify(visitedLevels));
+        updateAll();
+    }
+}
+
+function openEventModal(eventId) {
+    const evt = eventsData.find(e => e.id === eventId);
+    if (!evt) return;
+    document.getElementById('modalYearDisplay').textContent = evt.year;
+    document.getElementById('modalTitleDisplay').textContent = evt.title;
+    document.getElementById('modalDescriptionText').textContent = evt.fullDesc;
+    document.getElementById('modalFactsList').innerHTML = evt.facts.map(f => `<div class="elevator-modal-fact-item"><i class="fas fa-star-of-life"></i><span>${f}</span></div>`).join('');
+    document.getElementById('eventModal').classList.add('active-modal');
+}
+
+function closeModal() { document.getElementById('eventModal').classList.remove('active-modal'); }
+
+function updateAll() { updateTimeline(); updateProgress(); updateMarkers(); updateLevelDisplay(); updateCurrentInfo(); }
+
+function updateTimeline() {
+    document.getElementById('timelineList').innerHTML = eventsData.map(evt => {
+        const isVisited = visitedLevels.includes(evt.id);
+        const isActive = currentLevel === evt.id - 1;
+        return `<div class="elevator-timeline-event ${isActive ? 'active' : ''}">
+                    <div class="elevator-event-year">${evt.year}</div>
+                    <div class="elevator-event-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="elevator-event-name" onclick="jumpToLevel(${evt.id - 1})">${evt.shortTitle}</div>
+                    <div class="elevator-event-actions">
+                        <button class="elevator-event-detail-btn" onclick="openEventModal(${evt.id})"><i class="fas fa-info-circle"></i></button>
+                        <div class="elevator-event-status-dot ${isVisited ? 'visited-dot' : ''} ${isActive ? 'active-dot' : ''}"></div>
+                    </div>
+                </div>`;
+    }).join('');
+}
+
+function updateProgress() {
+    const count = visitedLevels.length;
+    const percent = (count / eventsData.length) * 100;
+    document.getElementById('globalProgressFill').style.width = percent + '%';
+    document.getElementById('progressStats').textContent = `${count}/${eventsData.length}`;
+}
+
+function updateCurrentInfo() {
+    const evt = eventsData[currentLevel];
+    document.getElementById('currentYear').textContent = evt.year;
+    document.getElementById('currentTitle').textContent = evt.title;
+    document.getElementById('currentShortDesc').textContent = evt.shortDesc;
+}
+
+function updateMarkers() {
+    const container = document.getElementById('levelMarkers');
+    container.innerHTML = '';
+    for (let i = eventsData.length - 1; i >= 0; i--) {
+        const marker = document.createElement('div');
+        marker.className = 'elevator-level-marker';
+        marker.onclick = (function(idx) { return function() { jumpToLevel(idx); }; })(i);
+        const circle = document.createElement('div');
+        circle.className = 'elevator-marker-circle';
+        if (i === currentLevel) circle.classList.add('current');
+        if (visitedLevels.includes(eventsData[i].id)) circle.classList.add('completed');
+        const label = document.createElement('div');
+        label.className = 'elevator-marker-label';
+        label.textContent = eventsData[i].year;
+        marker.appendChild(circle);
+        marker.appendChild(label);
+        container.appendChild(marker);
+    }
+}
+
+function updateLevelDisplay() {
+    document.getElementById('currentLevelNum').textContent = currentLevel + 1;
+    document.getElementById('totalLevelsNum').textContent = eventsData.length;
+    document.getElementById('cabLevelBadge').textContent = currentLevel + 1;
+}
+
+function animateElevator() {
+    const cab = document.getElementById('elevatorCab');
+    const shaft = document.getElementById('shaftWrapper');
+    if (!shaft) return;
+    const shaftHeight = shaft.clientHeight;
+    const topMargin = 15, bottomMargin = 85;
+    const availableHeight = shaftHeight - topMargin - bottomMargin;
+    const stepHeight = availableHeight / (eventsData.length - 1);
+    const targetBottom = topMargin + (currentLevel * stepHeight);
+    cab.style.bottom = targetBottom + 'px';
+    setTimeout(() => {
+        const currentEvent = eventsData[currentLevel];
+        if (currentEvent && !visitedLevels.includes(currentEvent.id)) saveProgress(currentEvent.id);
+    }, 300);
+}
+
+function jumpToLevel(level) {
+    if (isMoving || level === currentLevel) return;
+    isMoving = true;
+    currentLevel = level;
+    updateAll();
+    animateElevator();
+    setTimeout(() => { isMoving = false; }, 500);
+    if (window.innerWidth <= 768) document.getElementById('timelinePanel').classList.remove('open');
+}
+
+function moveUp() { if (isMoving || currentLevel >= eventsData.length - 1) return; isMoving = true; currentLevel++; updateAll(); animateElevator(); setTimeout(() => { isMoving = false; }, 500); }
+function moveDown() { if (isMoving || currentLevel <= 0) return; isMoving = true; currentLevel--; updateAll(); animateElevator(); setTimeout(() => { isMoving = false; }, 500); }
+
+function openMobileTimeline() { document.getElementById('timelinePanel').classList.add('open'); }
+function closeMobileTimeline() { document.getElementById('timelinePanel').classList.remove('open'); }
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProgress();
+    setTimeout(() => animateElevator(), 200);
+    document.getElementById('upNavBtn').addEventListener('click', moveUp);
+    document.getElementById('downNavBtn').addEventListener('click', moveDown);
+    document.getElementById('modalCloser').addEventListener('click', closeModal);
+    document.getElementById('showTimelineBtn').addEventListener('click', openMobileTimeline);
+    document.getElementById('closeTimelineBtn').addEventListener('click', closeMobileTimeline);
+    document.getElementById('detailsInfoBtn').addEventListener('click', () => openEventModal(eventsData[currentLevel].id));
+    document.getElementById('eventModal').addEventListener('click', (e) => { if (e.target === document.getElementById('eventModal')) closeModal(); });
+    let touchStart = 0;
+    const shaft = document.getElementById('shaftWrapper');
+    shaft.addEventListener('touchstart', (e) => { touchStart = e.touches[0].clientY; });
+    shaft.addEventListener('touchend', (e) => { const diff = touchStart - e.changedTouches[0].clientY; if (Math.abs(diff) > 40) diff > 0 ? moveUp() : moveDown(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'ArrowUp') { e.preventDefault(); moveUp(); } else if (e.key === 'ArrowDown') { e.preventDefault(); moveDown(); } else if (e.key === 'Escape') closeModal(); });
+    window.addEventListener('resize', () => setTimeout(animateElevator, 100));
+});
+</script>
+{% endblock %}

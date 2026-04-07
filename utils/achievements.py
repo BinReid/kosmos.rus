@@ -40,9 +40,18 @@ class AchievementManager:
                 description='Пройти тест с результатом 80%+',
                 icon='🏆',
                 color='silver',
+                condition_type='test_passed_80',
+                condition_value=1,
+                points_reward=50
+            ),
+            Achievement(
+                name='🏆 Юный учёный',
+                description='Пройти свой первый тест',
+                icon='🏆',
+                color='bronze',
                 condition_type='tests_passed',
                 condition_value=1,
-                points_reward=25
+                points_reward=15
             ),
             Achievement(
                 name='⭐ Звездный путь',
@@ -128,6 +137,9 @@ class AchievementManager:
             elif action_type == 'tests_passed':
                 count = TestResult.query.filter_by(user_id=user.id).count()
                 condition_met = count >= achievement.condition_value
+            
+            elif action_type == 'test_passed_80':
+                condition_met = value == 80
             
             elif action_type == 'streak':
                 condition_met = user.streak_days >= achievement.condition_value

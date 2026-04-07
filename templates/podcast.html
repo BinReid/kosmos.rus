@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero секция для страницы подкастов -->
+<div class="hero" style="min-height: 40vh; padding: 60px 0 30px;">
+    <h1>Подкасты</h1>
+    <p>Эксклюзивные интервью, разборы космических программ и прямые включения из Роскосмоса</p>
+</div>
+
+<!-- Секция с видео-карточками -->
+<div class="content-sec">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Видео 1 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="cosmos-card h-100">
+                    <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
+                        <iframe 
+                            src="https://vkvideo.ru/video_ext.php?oid=-211926408&id=456239093&hash=34c8302f03de5614&hd=4" 
+                            allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock" 
+                            frameborder="0" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted" style="margin-left: 10px;"><i class="far fa-clock me-1"></i> 70 мин</small>
+                        </div>
+                        <h5 class="mb-2" style="margin-left: 10px;">Космические программы будущего</h5>
+                        <p class="small text-muted" style="margin-left: 10px;">Обсуждение планов по освоению дальнего космоса и новых технологий</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Видео 2 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="cosmos-card h-100">
+                    <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
+                        <iframe 
+                            src="https://vkvideo.ru/video_ext.php?oid=-211926408&id=456239075&hash=787a697b2dbba044&hd=4" 
+                            allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock" 
+                            frameborder="0" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted" style="margin-left: 10px;"><i class="far fa-clock me-1"></i> 44 мин</small>
+                        </div>
+                        <h5 class="mb-2" style="margin-left: 10px;">История освоения космоса</h5>
+                        <p class="small text-muted" style="margin-left: 10px;">От первых спутников до современных орбитальных станций</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Видео 3 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="cosmos-card h-100">
+                    <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
+                        <iframe 
+                            src="https://vkvideo.ru/video_ext.php?oid=-211926408&id=456239067&hash=e013219a90898d46&hd=4" 
+                            allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock" 
+                            frameborder="0" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted" style="margin-left: 10px;"><i class="far fa-clock me-1"></i> 42 мин</small>
+                        </div>
+                        <h5 class="mb-2" style="margin-left: 10px;">Технологии ракетостроения</h5>
+                        <p class="small text-muted" style="margin-left: 10px;">Как создаются современные носители и двигатели для полётов</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

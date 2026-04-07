@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
-from models import db, User, News, Test, Question, DailyFact, Achievement, University, CareerDirection, Vacancy
-from forms import NewsForm, TestForm, FactForm, AchievementForm, UniversityForm, CareerDirectionForm, VacancyForm
+from models import db, User, News, Test, Question, DailyFact, Achievement, University, CareerDirection, Vacancy, Project
+from forms import NewsForm, TestForm, FactForm, AchievementForm, UniversityForm, CareerDirectionForm, VacancyForm, ProjectForm
 from utils.achievements import AchievementManager
 from utils.helpers import image_to_base64
 import json
 from functools import wraps
+from datetime import *
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -39,6 +40,7 @@ def dashboard():
         'news_count': News.query.count(),
         'tests_count': Test.query.count(),
         'achievements_count': Achievement.query.count(),
+        'projects_count': Project.query.count(),
         'universities_count': University.query.count(),
         'directions_count': CareerDirection.query.count(),
         'vacancies_count': Vacancy.query.count(),
@@ -58,10 +60,13 @@ def dashboard():
     
     recent_news = News.query.order_by(News.created_at.desc()).limit(5).all()
     recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
+    daily_fact = DailyFact.query.order_by(DailyFact.date.desc()).first()
+
     
     return render_template('admin/dashboard.html', 
                          stats=stats,
                          recent_news=recent_news,
+                         fact=daily_fact,
                          recent_users=recent_users)
 
 
@@ -668,3 +673,197 @@ def api_add_question(test_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+@admin_bp.route('/projects')
+@admin_required
+def admin_projects():
+    """Управление проектами"""
+    projects_list = Project.query.order_by(Project.sort_order, Project.created_at.desc()).all()
+    return render_template('admin/projects.html', projects=projects_list)
+
+
+@admin_bp.route('/projects/add', methods=['GET', 'POST'])
+@admin_required
+def admin_project_add():
+    """Добавление проекта"""
+    form = ProjectForm()
+    
+    if form.validate_on_submit():
+        project = Project(
+            title=form.title.data,
+            short_description=form.short_description.data,
+            description_full=form.description_full.data,
+            status=form.status.data,
+            mission_type=form.mission_type.data,
+            year=form.year.data,
+            sort_order=form.sort_order.data or 0,
+            is_active=form.is_active.data
+        )
+        
+        # Устанавливаем название статуса для отображения
+        status_names = {
+            'planned': 'В плане',
+            'active': 'Активен',
+            'completed': 'Завершён',
+            'paused': 'Приостановлен'
+        }
+        project.status_name = status_names.get(form.status.data, 'В плане')
+        
+        # Обработка целей
+        if form.goals.data:
+            goals = [g.strip() for g in form.goals.data.split('\n') if g.strip()]
+            project.set_goals_list(goals)
+        
+        # Обработка партнёров
+        if form.partners.data:
+            partners = [p.strip() for p in form.partners.data.split('\n') if p.strip()]
+            project.set_partners_list(partners)
+        
+        # Обработка хронологии
+        if form.updates.data:
+            updates = []
+            for line in form.updates.data.split('\n'):
+                if '|' in line:
+                    date_part, text_part = line.split('|', 1)
+                    updates.append({
+                        'date': date_part.strip(),
+                        'text': text_part.strip()
+                    })
+                elif line.strip():
+                    updates.append({
+                        'date': '',
+                        'text': line.strip()
+                    })
+            project.set_updates_list(updates)
+        
+        # Обработка изображения
+        if form.image.data and form.image.data.filename:
+            base64_data, mime_type = image_to_base64(form.image.data)
+            if base64_data:
+                project.image_data = base64_data
+                project.image_mime = mime_type
+        
+        db.session.add(project)
+        db.session.commit()
+        
+        flash(f'Проект "{project.title}" успешно добавлен!', 'success')
+        return redirect(url_for('admin.admin_projects'))
+    
+    return render_template('admin/project_add.html', form=form)
+
+@admin_bp.route('/projects/edit/<int:project_id>', methods=['GET', 'POST'])
+@admin_required
+def admin_project_edit(project_id):
+    """Редактирование проекта"""
+    project = Project.query.get_or_404(project_id)
+    form = ProjectForm(obj=project)
+    
+    if form.validate_on_submit():
+        project.title = form.title.data
+        project.short_description = form.short_description.data
+        project.description_full = form.description_full.data
+        project.status = form.status.data
+        project.mission_type = form.mission_type.data
+        project.year = form.year.data
+        project.sort_order = form.sort_order.data or 0
+        project.is_active = form.is_active.data
+        
+        # Обновляем название статуса
+        status_names = {
+            'planned': 'В плане',
+            'active': 'Активен',
+            'completed': 'Завершён',
+            'paused': 'Приостановлен'
+        }
+        project.status_name = status_names.get(form.status.data, 'В плане')
+        
+        # Обработка целей
+        if form.goals.data:
+            goals = [g.strip() for g in form.goals.data.split('\n') if g.strip()]
+            project.set_goals_list(goals)
+        else:
+            project.set_goals_list([])
+        
+        # Обработка партнёров
+        if form.partners.data:
+            partners = [p.strip() for p in form.partners.data.split('\n') if p.strip()]
+            project.set_partners_list(partners)
+        else:
+            project.set_partners_list([])
+        
+        # Обработка хронологии
+        if form.updates.data:
+            updates = []
+            for line in form.updates.data.split('\n'):
+                if '|' in line:
+                    date_part, text_part = line.split('|', 1)
+                    updates.append({
+                        'date': date_part.strip(),
+                        'text': text_part.strip()
+                    })
+                elif line.strip():
+                    updates.append({
+                        'date': '',
+                        'text': line.strip()
+                    })
+            project.set_updates_list(updates)
+        else:
+            project.set_updates_list([])
+        
+        # Удаление изображения
+        if form.remove_image.data == '1':
+            project.image_data = None
+            project.image_mime = None
+            flash('Изображение удалено', 'info')
+        
+        # Обработка нового изображения
+        if form.image.data and form.image.data.filename:
+            base64_data, mime_type = image_to_base64(form.image.data)
+            if base64_data:
+                project.image_data = base64_data
+                project.image_mime = mime_type
+                flash('Изображение обновлено', 'success')
+        
+        project.updated_at = datetime.utcnow()
+        db.session.commit()
+        
+        flash(f'Проект "{project.title}" успешно обновлён!', 'success')
+        return redirect(url_for('admin.admin_projects'))
+    
+    # Заполняем поля формы текущими данными
+    form.goals.data = '\n'.join(project.get_goals_list())
+    form.partners.data = '\n'.join(project.get_partners_list())
+    
+    updates_lines = []
+    for update in project.get_updates_list():
+        if update.get('date'):
+            updates_lines.append(f"{update['date']} | {update['text']}")
+        else:
+            updates_lines.append(update['text'])
+    form.updates.data = '\n'.join(updates_lines)
+    
+    return render_template('admin/project_edit.html', form=form, project=project)
+
+
+@admin_bp.route('/projects/delete/<int:project_id>')
+@admin_required
+def admin_project_delete(project_id):
+    """Удаление проекта"""
+    project = Project.query.get_or_404(project_id)
+    title = project.title
+    db.session.delete(project)
+    db.session.commit()
+    flash(f'Проект "{title}" удалён', 'success')
+    return redirect(url_for('admin.admin_projects'))
+
+
+@admin_bp.route('/projects/toggle/<int:project_id>')
+@admin_required
+def admin_project_toggle(project_id):
+    """Включение/выключение отображения проекта"""
+    project = Project.query.get_or_404(project_id)
+    project.is_active = not project.is_active
+    db.session.commit()
+    status = 'активен' if project.is_active else 'скрыт'
+    flash(f'Проект "{project.title}" теперь {status}', 'success')
+    return redirect(url_for('admin.admin_projects'))

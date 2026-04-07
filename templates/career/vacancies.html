@@ -1,81 +1,101 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-
-    <!-- HEADER -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-5 gap-3">
-        <h2 class="mb-0">
-            <i class="fas fa-bullhorn text-danger me-2"></i>
+<div class="container vacancies-container">
+    
+    <!-- Header секция -->
+    <div class="vacancies-header">
+        <h2>
+            <i class="fas fa-bullhorn"></i>
             Вакансии
         </h2>
-
-        <a href="{{ url_for('career.index') }}" class="btn btn-outline-cosmos">
-            Назад
+        
+        <a href="{{ url_for('career.index') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Назад к карьере
         </a>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-
-            {% for vacancy in vacancies %}
-            <div class="cosmos-card mb-4">
-
-                <div class="row align-items-center">
-
-                    <!-- LEFT -->
-                    <div class="col-md-8">
-
-                        <h4 class="mb-2">{{ vacancy.title }}</h4>
-
-                        <p class="mb-1 text-muted">
-                            <i class="fas fa-building me-1"></i>{{ vacancy.company }}
-                        </p>
-
-                        <p class="mb-2 text-muted">
-                            <i class="fas fa-map-marker-alt me-1"></i>{{ vacancy.location }}
-                        </p>
-
-                        <p>
-                            {{ vacancy.description[:150] }}
-                            {% if vacancy.description|length > 150 %}...{% endif %}
-                        </p>
-
-                        <div class="mt-3">
-                            {% if vacancy.salary_min or vacancy.salary_max %}
-                            <span class="btn btn-secondary btn-sm me-2">
-                                {{ vacancy.salary_min }} - {{ vacancy.salary_max }}
-                            </span>
-                            {% endif %}
-
-                            <span class="btn btn-outline-cosmos btn-sm">
-                                до {{ vacancy.expires_at.strftime('%d.%m.%Y') }}
-                            </span>
-                        </div>
-
-                    </div>
-
-                    <!-- RIGHT -->
-                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <a href="{{ url_for('career.vacancy_detail', vacancy_id=vacancy.id) }}"
-                           class="btn btn-cosmos w-100">
-                            Подробнее
-                        </a>
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% else %}
-            <div class="text-center mt-5">
-                <i class="fas fa-briefcase fa-2x mb-3"></i>
-                <h4>Нет вакансий</h4>
-                <p>Попробуйте позже</p>
-            </div>
-            {% endfor %}
-
+    <!-- Статистика (опционально) -->
+    {% if vacancies %}
+    <div class="vacancies-stats">
+        <div class="vacancies-stat">
+            <i class="fas fa-briefcase"></i>
+            <span>{{ vacancies|length }} вакансий</span>
         </div>
+    </div>
+    {% endif %}
+
+    <!-- Список вакансий -->
+    <div class="vacancies-list">
+        {% for vacancy in vacancies %}
+        <div class="vacancy-card">
+            <div class="row align-items-center">
+                
+                <!-- Левая часть - информация -->
+                <div class="col-md-8">
+                    <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+                    
+                    <div class="vacancy-meta">
+                        <div class="vacancy-meta-item">
+                            <i class="fas fa-building"></i>
+                            <span>{{ vacancy.company }}</span>
+                        </div>
+                        <div class="vacancy-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ vacancy.location }}</span>
+                        </div>
+                    </div>
+                    
+                    <p class="vacancy-description">
+                        {{ vacancy.description[:160] }}
+                        {% if vacancy.description|length > 160 %}...{% endif %}
+                    </p>
+                    
+                    <div class="vacancy-tags">
+                        {% if vacancy.salary_min or vacancy.salary_max %}
+                        <div class="vacancy-tag vacancy-tag-salary">
+                            <i class="fas fa-ruble-sign"></i>
+                            {% if vacancy.salary_min and vacancy.salary_max %}
+                                {{ vacancy.salary_min|int }} - {{ vacancy.salary_max|int }} ₽
+                            {% elif vacancy.salary_min %}
+                                от {{ vacancy.salary_min|int }} ₽
+                            {% elif vacancy.salary_max %}
+                                до {{ vacancy.salary_max|int }} ₽
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="vacancy-tag vacancy-tag-deadline">
+                            <i class="fas fa-calendar-alt"></i>
+                            до {{ vacancy.expires_at.strftime('%d.%m.%Y') }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Правая часть - кнопка -->
+                <div class="col-md-4 vacancy-button">
+                    <a href="{{ url_for('career.vacancy_detail', vacancy_id=vacancy.id) }}"
+                       class="btn-cosmos">
+                        Подробнее <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+        {% else %}
+        
+        <!-- Empty state -->
+        <div class="vacancies-empty">
+            <i class="fas fa-briefcase"></i>
+            <h4>Нет активных вакансий</h4>
+            <p>На данный момент открытых вакансий нет.<br>Загляните позже — мы регулярно обновляем список</p>
+            <a href="{{ url_for('career.index') }}" class="btn-cosmos-outline" style="margin-top: 20px; display: inline-flex;">
+                <i class="fas fa-arrow-left me-2"></i>
+                Вернуться к карьере
+            </a>
+        </div>
+        {% endfor %}
     </div>
 
 </div>

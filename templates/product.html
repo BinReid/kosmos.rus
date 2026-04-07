@@ -1,5 +1,327 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class="hero-brand-section py-4">
+    <div class="container">
+        <!-- ХЕРО-БЛОК: бренд-манифест "ТОЛЬКО ВПЕРЕД" -->
+        <div class="text-center mb-5">
+            <span class="badge" style="background: var(--deep-red); color: white; font-family: 'Russo One'; padding: 6px 20px; border-radius: 40px; letter-spacing: 1px;">
+                <i class="fas fa-rocket me-1"></i> ТОЛЬКО ВПЕРЕД
+            </span>
+            <h1 class="glow-text mt-3" style="font-size: 3rem;">Космос.Rus — цифровой навигатор<br>космических достижений</h1>
+            <p class="lead mx-auto" style="max-width: 700px; color: var(--silver-metal);">Платформа, объединяющая наследие отечественной космонавтики и технологии будущего. От первого спутника до Российской орбитальной станции.</p>
+        </div>
 
+        <!-- Философия бренда: Ту-144, двойная дельта, красная звезда -->
+        <div class="row g-4 mb-5 align-items-stretch">
+            <div class="col-md-6">
+                <div class="glass-card h-100">
+                    <div class="mb-3">
+                        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="50,15 85,80 15,80" stroke="#4A5AC5" stroke-width="3" stroke-linejoin="round" fill="none"/>
+                            <polygon points="50,35 72,75 28,75" stroke="#970000" stroke-width="2" stroke-linejoin="round" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3>Символ движения вперёд</h3>
+                    <p class="mt-2">Динамичная синяя фигура вдохновлена геометрией легендарного <strong class="text-white">Ту-144</strong> — первого в мире сверхзвукового авиалайнера. Форма «двойного дельта-крыла» — символ скорости, прогресса и нашего стремления всегда быть первыми.</p>
+                    <p><span class="text-danger">★</span> Красная звезда — фундаментальный символ силы и величия, олицетворяет триумф отечественной космонавтики и служит вектором, указывающим путь к новым достижениям.</p>
+                    <div class="mt-2 d-flex gap-3">
+                        <i class="fas fa-chart-line fa-fw" style="color: var(--cosmic-blue);"></i>
+                        <span>«Космос.Rus» — энергия прорыва, воплощенная в металле и цифровом коде.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="glass-card h-100">
+                    <h3><i class="fas fa-font me-2" style="color: var(--silver-metal);"></i> Инженерный арт: mr_Vokilar</h3>
+                    <p>Шрифт логотипа mr_Vokilar — визуальный код «многоступенчатости», отсылающий к устройству ракет <strong>«Ангара-А5М»</strong> и траекториям первых спутников. Соединяет эстетику ретро-футуризма времён станций «Салют» и «Луноход» с современным цифровым минимализмом.</p>
+                    <div class="quote-block mt-3" style="background: rgba(151,0,0,0.12); border-left: 4px solid var(--deep-red); padding: 1rem; border-radius: 16px;">
+                        <i class="fas fa-quote-left me-2" style="color: var(--silver-metal);"></i> При технической строгости mr_Vokilar сохраняет легкость и динамику, делая бренд современным и привлекательным для молодежи в рамках нацпроекта «Космос».
+                    </div>
+                    <div class="mt-3 small text-muted">
+                        <i class="fab fa-osi"></i> SIL Open Font License 1.1 — свободная лицензия для коммерческого использования.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Типографика: Russo One + Geologica -->
+        <h2 class="mt-4"><i class="fas fa-palette me-3"></i> Айдентика будущего</h2>
+        <div class="row g-4 mb-5">
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h4><span style="font-family: 'Russo One';">Russo One</span> — сила и надёжность</h4>
+                    <p>Акцидентный шрифт для заголовков и навигации. Транслирует технологичность, мощь и футуристичный дух бренда, мгновенно привлекая внимание тяжёлым уверенным начертанием. Используется в маркировке ракет «Ангара-А5М» и первых спутниках.</p>
+                    <div class="typography-demo" style="background: rgba(255,255,255,0.03); border-radius: 20px; padding: 1rem;">
+                        <div style="font-family: 'Russo One'; font-size: 2rem;">H1 — 48px</div>
+                        <div style="font-family: 'Russo One'; font-size: 1.8rem;">H2 — 38px</div>
+                        <div style="font-family: 'Russo One'; font-size: 1.3rem;">H4 — 21px</div>
+                        <hr class="bg-secondary">
+                        <div style="font-family: 'Geologica'; font-weight: 500;">Geologica Medium — основной наборный текст</div>
+                        <p style="font-family: 'Geologica'; font-size: 0.9rem;">Миссия “Луна-Глоб” направлена на изучение полярных областей Луны и поиск водяного льда. Станция оснащена передовыми российскими приборами для анализа грунта и атмосферы.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h4><i class="fas fa-fill-drip"></i> Космическая палитра</h4>
+                    <p class="small">«Технологичный патриотизм» — переосмысленный триколор через призму космических достижений. Цветовая гамма на тёмном фоне создаёт эффект «цифрового вакуума».</p>
+                    <div class="row g-2 mt-2">
+                        <div class="col-6 col-md-3 text-center">
+                            <div style="background: #B7B7B7; height: 60px; border-radius: 16px;"></div>
+                            <small>Серебряный<br>#B7B7B7</small>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div style="background: #4A5AC5; height: 60px; border-radius: 16px;"></div>
+                            <small>Космический синий<br>#4A5AC5</small>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div style="background: #970000; height: 60px; border-radius: 16px;"></div>
+                            <small>Глубокий красный<br>#970000</small>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div style="background: #03030A; height: 60px; border-radius: 16px; border:1px solid #444;"></div>
+                            <small>Цифровой вакуум<br>#03030A</small>
+                        </div>
+                    </div>
+                    <div class="mt-3 small">
+                        <i class="fas fa-tachometer-alt"></i> Серебряный металлик — цвет титана корпусов ракет. Космический синий — верность науке и орбите. Глубокий красный — пламя двигателей и преемственность от красной звезды.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Миссия и ключевые особенности -->
+        <div class="glass-card mb-5">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <h2 class="border-0" style="font-size: 1.9rem;"><i class="fas fa-space-station me-2"></i> Миссия платформы</h2>
+                    <p class="lead">Соединить прошлое, настоящее и будущее российской космонавтики в единой экосистеме. Образовательные треки, карьерные возможности для школьников и студентов, достоверные новости, ИИ-саммаризация и интерактивные тесты.</p>
+                    <div class="d-flex flex-wrap gap-4 mt-4">
+                        <div><i class="fas fa-graduation-cap fa-2x" style="color: var(--cosmic-blue);"></i><br>Образование</div>
+                        <div><i class="fas fa-chalkboard-user fa-2x" style="color: var(--silver-metal);"></i><br>ИИ-саммаризация</div>
+                        <div><i class="fas fa-briefcase fa-2x" style="color: var(--deep-red);"></i><br>Карьерный трек</div>
+                        <div><i class="fas fa-globe fa-2x" style="color: var(--cosmic-blue);"></i><br>Нацпроект «Космос»</div>
+                    </div>
+                </div>
+                <div class="col-md-5 text-center">
+                    <div class="stat-value-large" style="font-family: 'Russo One'; font-size: 2.5rem; color: var(--silver-metal);">12+ <span style="font-size: 1rem;">миссий</span></div>
+                    <div class="stat-value-large" style="font-family: 'Russo One'; font-size: 2.5rem; color: var(--silver-metal);">150+ <span style="font-size: 1rem;">статей</span></div>
+                    <div class="badge mt-3" style="background: var(--deep-red); padding: 6px 16px;">РОС — Российская орбитальная станция</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Дизайн-элементы: бейджи, баннеры, мерч, билборды (по брендбуку) -->
+        <h2><i class="fas fa-id-card me-3"></i> Цифровой & физический дизайн</h2>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="glass-card text-center h-100">
+                    <i class="fas fa-id-badge fa-3x" style="color: var(--silver-metal);"></i>
+                    <h4 class="mt-2">Бейджи</h4>
+                    <p>Дизайн бейджей подчёркивает эстетику высоких технологий, создавая стильный образ при использовании на мероприятиях или в качестве личных карт сотрудников.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card text-center h-100">
+                    <i class="fas fa-chalkboard fa-3x" style="color: var(--cosmic-blue);"></i>
+                    <h4 class="mt-2">Digital-панель / Баннер</h4>
+                    <p>Интерактивный QR-код, имиджевое оформление пространств, мгновенное взаимодействие с аудиторией. Премиальный внешний вид и быстрая навигация.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card text-center h-100">
+                    <i class="fas fa-mug-hot fa-3x" style="color: var(--deep-red);"></i>
+                    <h4 class="mt-2">Мерч и флаг</h4>
+                    <p>Блокноты, кружки, стикеры с цитатами Гагарина и Терешковой. Лаконичный дизайн, объединяющий патриотизм и ретрофутуризм.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Дополнительные носители: билборды, лайтбокс, комплект мерча -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <i class="fas fa-ad fa-2x mb-2" style="color: var(--silver-metal);"></i>
+                    <h4>Билборды & Лайтбокс</h4>
+                    <p>Строгий дизайн и крупная графика делают бренд заметным издалека. Вертикальный лайтбокс адаптирован для зон с высоким пешеходным трафиком — метро, переходы. QR-код на уровне глаз превращает рекламную панель в интерактивный шлюз.</p>
+                    <div class="d-flex gap-3 mt-2">
+                        <span class="badge" style="background: #4A5AC5;">Горизонтальный билборд</span>
+                        <span class="badge" style="background: #970000;">Цифровой указатель</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <i class="fas fa-shopping-bag fa-2x mb-2" style="color: var(--deep-red);"></i>
+                    <h4>Комплект мерча</h4>
+                    <p>Шопер с цитатой и графикой превращает эко-сумку в живой носитель истории бренда. Объединяет практичность и эмоциональный посыл, работая на узнаваемость компании в повседневной городской среде.</p>
+                    <div class="mt-2"><i class="fas fa-tag"></i> «Поехали!» — стикеры с энергичным призывом и строгой геометрией.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правила использования логотипа (охранное поле, запреты) -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h4><i class="fas fa-ruler-combined"></i> Правила логотипа</h4>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> <strong>Охранное поле:</strong> минимальное свободное пространство вокруг логотипа равно высоте буквы «К».</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> <strong>Минимальный размер:</strong> для печати — 30 мм по ширине, для digital — 120 px.</li>
+                        <li class="mb-2"><i class="fas fa-ban text-danger me-2"></i> Запрещено искажать пропорции (растягивать или сжимать).</li>
+                        <li class="mb-2"><i class="fas fa-ban text-danger me-2"></i> Запрещено менять элементы местами или использовать другие шрифты для надписи.</li>
+                        <li class="mb-2"><i class="fas fa-ban text-danger me-2"></i> Запрещено добавлять тени, градиенты, обводки, поворачивать логотип.</li>
+                    </ul>
+                    <div class="bg-dark p-3 rounded text-center mt-2" style="background: rgba(0,0,0,0.4);">
+                        <div class="d-flex align-items-center justify-content-center gap-3">
+                            <img src="{{ url_for('static', filename='img/ico.svg') }}" width="45" alt="logo">
+                            <span style="font-family: 'Russo One'; font-size: 1.3rem;">Космос.Rus</span>
+                        </div>
+                        <small class="text-muted">Основной логотип + фавикон сайта (вторая вариация)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h4><i class="fas fa-qrcode"></i> Интерактивность бренда</h4>
+                    <p>Баннеры и билборды содержат QR-коды для мгновенного перехода на ресурс. Дизайн приложения (иконка) обеспечивает узнаваемость на экране смартфона, делая взаимодействие с сервисами компании быстрым и интуитивно понятным.</p>
+                    <div class="d-flex justify-content-around mt-4">
+                        <div class="text-center"><i class="fas fa-mobile-alt fa-2x" style="color: var(--cosmic-blue);"></i><br><small>App icon</small></div>
+                        <div class="text-center"><i class="fas fa-chart-simple fa-2x" style="color: var(--silver-metal);"></i><br><small>Digital панель</small></div>
+                        <div class="text-center"><i class="fas fa-flag fa-2x" style="color: var(--deep-red);"></i><br><small>Флаг бренда</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Цитата и призыв -->
+        <div class="mt-5 p-4 text-center" style="background: linear-gradient(135deg, rgba(74,90,197,0.12), rgba(3,3,10,0.6)); border-radius: 48px; backdrop-filter: blur(4px);">
+            <i class="fas fa-quote-right fa-2x" style="color: var(--silver-metal); opacity: 0.7;"></i>
+            <p class="fs-4 fw-light mt-2">«Космос.Rus — это энергия прорыва, воплощенная в металле и цифровом коде. Дизайн платформы говорит: Только вперёд!»</p>
+            <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                <a href="{{ url_for('main.projects') }}" class="btn-primary" style="padding: 10px 28px;"><i class="fas fa-rocket me-2"></i>К проектам</a>
+                <a href="{{ url_for('main.news_list') }}" class="btn-outline-accent" style="padding: 10px 28px;"><i class="fas fa-newspaper me-2"></i>Новости отрасли</a>
+            </div>
+        </div>
+
+        <!-- Кнопка для открытия модального окна с брендбуком -->
+        <div class="text-center mt-5 mb-3">
+            <button type="button" class="btn-brandbook" data-bs-toggle="modal" data-bs-target="#brandbookModal">
+                <i class="fas fa-file-pdf me-2"></i>Посмотреть полный брендбук
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Модальное окно с PDF-брендбуком -->
+<div class="modal fade" id="brandbookModal" tabindex="-1" aria-labelledby="brandbookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content" style="background: var(--space-black); border: 1px solid rgba(74,90,197,0.5); border-radius: 24px;">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(151,0,0,0.4);">
+                <h5 class="modal-title" id="brandbookModalLabel" style="font-family: 'Russo One'; color: var(--silver-metal);">
+                    <i class="fas fa-book-open me-2"></i>Брендбук «Космос.Rus»
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div style="position: relative; height: 80vh; width: 100%;">
+                    <iframe src="{{ url_for('static', filename='other/bb.pdf') }}" 
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 0 0 20px 20px;"
+                            title="Брендбук Космос.Rus">
+                        Ваш браузер не поддерживает просмотр PDF. 
+                        <a href="{{ url_for('static', filename='other/bb.pdf') }}">Скачайте PDF</a>
+                    </iframe>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid rgba(74,90,197,0.3);">
+                <a href="{{ url_for('static', filename='other/bb.pdf') }}" class="btn btn-outline-accent" download>
+                    <i class="fas fa-download me-2"></i>Скачать PDF
+                </a>
+                <button type="button" class="btn-primary" style="background: var(--deep-red);" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Закрыть
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* дополнительные стили, не переопределяющие глобальные */
+    .glow-text {
+        text-shadow: 0 0 10px rgba(74,90,197,0.3);
+    }
+    .quote-block {
+        background: rgba(151,0,0,0.08);
+        border-radius: 20px;
+    }
+    .stat-value-large {
+        font-family: 'Russo One', sans-serif;
+        font-size: 2.2rem;
+        color: var(--silver-metal);
+    }
+    .btn-outline-accent {
+        background: transparent;
+        border: 1.5px solid var(--cosmic-blue);
+        border-radius: 40px;
+        color: var(--cosmic-blue);
+        font-weight: 600;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-outline-accent:hover {
+        background: var(--cosmic-blue);
+        color: white;
+        border-color: var(--cosmic-blue);
+    }
+    .btn-brandbook {
+        background: linear-gradient(95deg, var(--deep-red) 0%, #b80000 100%);
+        border: none;
+        padding: 14px 36px;
+        border-radius: 60px;
+        font-family: 'Russo One', sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(151,0,0,0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .btn-brandbook:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 25px rgba(151,0,0,0.7);
+        background: linear-gradient(95deg, #c00000, var(--deep-red));
+        color: white;
+    }
+    @media (max-width: 768px) {
+        .hero-brand-section h1 {
+            font-size: 2rem;
+        }
+        .btn-brandbook {
+            padding: 10px 24px;
+            font-size: 0.9rem;
+        }
+    }
+    /* модальное окно на тёмном фоне */
+    .modal-content {
+        background: #03030A !important;
+    }
+    .modal-header .btn-close {
+        filter: invert(1) brightness(0.8);
+    }
+</style>
+
+<script>
+    // Инициализация Bootstrap модальных окон (если Bootstrap JS уже загружен в base)
+    document.addEventListener('DOMContentLoaded', function() {
+        // убедимся что модальное окно корректно работает с динамическим контентом
+        var modalElement = document.getElementById('brandbookModal');
+        if (modalElement && typeof bootstrap !== 'undefined') {
+            // просто убеждаемся что модальное окно будет работать
+        }
+    });
+</script>
 {% endblock %}

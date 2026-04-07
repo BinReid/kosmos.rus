@@ -101,13 +101,13 @@ def settings():
             if form.validate_on_submit():
                 user.username = form.username.data
                 user.email = form.email.data
-                
+
                 # Удаление аватара
-                if form.remove_avatar.data == '1':
+                if request.form.get('remove_avatar_checkbox') == '1':
                     user.avatar_data = None
                     user.avatar_mime = None
                     flash('Аватар удален', 'info')
-                
+                                
                 # Загрузка нового аватара
                 if form.avatar.data and form.avatar.data.filename:
                     from utils.helpers import image_to_base64

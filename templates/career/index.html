@@ -1,115 +1,149 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-
-    <!-- HEADER -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <h2>
-                <i class="fas fa-briefcase text-danger me-2"></i>
-                Карьера в космической отрасли
-            </h2>
-            <p class="lead mt-3">
-                Путь к звёздам начинается здесь! Узнайте о профессиях, обучении и возможностях.
-            </p>
-        </div>
+<div class="career-container">
+    
+    <!-- Hero секция -->
+    <div class="career-hero">
+        <h1>
+            <i class="fas fa-rocket"></i>
+            Карьера в космической отрасли
+        </h1>
+        <p class="lead">
+            Путь к звёздам начинается здесь! Узнайте о профессиях, обучении и возможностях <br>
+            для реализации вашей мечты.
+        </p>
     </div>
 
-    <div class="row">
+    <div class="row g-4">
         
-        <!-- LEFT -->
+        <!-- Левая колонка -->
         <div class="col-lg-8">
-
-            <div class="cosmos-card mb-4">
-                <h3 class="mb-4">
-                    <i class="fas fa-compass text-danger me-2"></i>
+            
+            <!-- Направления карьеры -->
+            <div>
+                <h2 class="section-title">
+                    <i class="fas fa-compass"></i>
                     Направления карьеры
-                </h3>
-
-                <div class="row g-4">  <!-- Изменено: добавлен класс g-4 для отступов между карточками -->
+                </h2>
+                
+                {% if directions %}
+                <div class="directions-grid">
                     {% for direction in directions %}
-                    <div class="col-md-6 d-flex">  <!-- Изменено: добавлен класс d-flex для одинаковой высоты карточек -->
-                        <div class="card h-100 w-100">  <!-- Изменено: добавлен класс w-100 для полной ширины внутри колонки -->
-                            <div class="card-icon">{{ direction.icon | safe }}</div>
-                            <h4>{{ direction.title }}</h4>
-                            <p>
-                                {{ direction.description[:120] }}
-                                {% if direction.description|length > 120 %}...{% endif %}
-                            </p>
-
-                            <a href="{{ url_for('career.direction_detail', direction_id=direction.id) }}"
-                               class="btn btn-outline-cosmos w-100 mt-auto">
-                                Подробнее <i class="fas fa-arrow-right ms-2"></i>
-                            </a>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="col-12">
-                        <div class="empty-state text-center">
-                            <i class="fas fa-info-circle fa-2x mb-3"></i>
-                            <h4>Направления скоро появятся</h4>
-                            <p>Скоро здесь будет контент</p>
-                        </div>
+                    <div class="direction-card">
+                        <div class="direction-icon">{{ direction.icon | safe }}</div>
+                        <h3>{{ direction.title }}</h3>
+                        <p class="direction-description">
+                            {{ direction.description[:140] }}
+                            {% if direction.description|length > 140 %}...{% endif %}
+                        </p>
+                        <a href="{{ url_for('career.direction_detail', direction_id=direction.id) }}" 
+                           class="btn-cosmos-outline" style="align-self: flex-start;">
+                            Подробнее <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                     {% endfor %}
                 </div>
+                {% else %}
+                <div class="empty-state-career">
+                    <i class="fas fa-rocket"></i>
+                    <h4>Скоро здесь появятся направления</h4>
+                    <p>Мы готовим для вас подробную информацию о карьерных путях в космонавтике</p>
+                </div>
+                {% endif %}
             </div>
-
-            <div class="cosmos-card text-center">
-                <h3 class="mb-4">
-                    <i class="fas fa-graduation-cap text-danger me-2"></i>
+            
+            <!-- Ведущие ВУЗы -->
+            <div class="universities-section">
+                <h2 class="section-title" style="margin-bottom: 20px;">
+                    <i class="fas fa-graduation-cap"></i>
                     Ведущие ВУЗы
-                </h3>
-
-                <a href="{{ url_for('career.universities') }}" class="btn btn-cosmos">
-                    Смотреть все ВУЗы
+                </h2>
+                <p>Ознакомьтесь с лучшими учебными заведениями России для подготовки к карьере в космонавтике</p>
+                
+                {% if top_universities %}
+                <div class="universities-preview">
+                    {% for uni in top_universities[:3] %}
+                    <div class="university-preview-card">
+                        <i class="fas fa-university"></i>
+                        <h4>{{ uni.name }}</h4>
+                        <p><i class="fas fa-map-marker-alt me-1"></i> {{ uni.city }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <a href="{{ url_for('career.universities') }}" class="btn-cosmos-primary">
+                    Все ВУЗы <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
-
+            
         </div>
-
-        <!-- RIGHT -->
+        
+        <!-- Правая колонка -->
         <div class="col-lg-4">
-
-            {% if show_vacancies %}
-            <div class="cosmos-card mb-4 text-center">
-                <h4 class="mb-3">
-                    <i class="fas fa-bullhorn text-danger me-2"></i>
-                    Вакансии
-                </h4>
-
-                <a href="{{ url_for('career.vacancies') }}" class="btn btn-outline-cosmos w-100">
-                    Смотреть
-                </a>
+            <div class="career-sidebar">
+                
+                <!-- Вакансии -->
+                {% if show_vacancies %}
+                <div class="vacancies-card">
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>Актуальные вакансии</h3>
+                    <p>Проверьте открытые позиции в ведущих компаниях космической отрасли</p>
+                    <a href="{{ url_for('career.vacancies') }}" class="btn-cosmos-outline w-100">
+                        Смотреть вакансии <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% else %}
+                <div class="age-restriction-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Доступ ограничен</h3>
+                    <p>Раздел вакансий доступен пользователям от 18 лет</p>
+                    <span class="age-value">
+                        <i class="fas fa-user-astronaut me-1"></i>
+                        Ваш возраст: {{ user.age if user and user.age else '—' }} лет
+                    </span>
+                </div>
+                {% endif %}
+                
+                <!-- Как стать космонавтом -->
+                <div class="how-to-card">
+                    <h3>
+                        <i class="fas fa-star-of-life"></i>
+                        Как стать космонавтом?
+                    </h3>
+                    <ul class="steps-list">
+                        <li>
+                            <span class="step-number">1</span>
+                            <span class="step-text">Получить высшее техническое образование</span>
+                        </li>
+                        <li>
+                            <span class="step-number">2</span>
+                            <span class="step-text">Наработать опыт работы от 3 лет</span>
+                        </li>
+                        <li>
+                            <span class="step-number">3</span>
+                            <span class="step-text">Подать заявку в отряд космонавтов</span>
+                        </li>
+                        <li>
+                            <span class="step-number">4</span>
+                            <span class="step-text">Пройти строгую медицинскую комиссию</span>
+                        </li>
+                        <li>
+                            <span class="step-number">5</span>
+                            <span class="step-text">Пройти физическую подготовку</span>
+                        </li>
+                        <li>
+                            <span class="step-number">6</span>
+                            <span class="step-text">Общекосмическая подготовка (2 года)</span>
+                        </li>
+                    </ul>
+                </div>
+                
             </div>
-            {% else %}
-            <div class="cosmos-card mb-4 text-center">
-                <i class="fas fa-lock fa-2x mb-3"></i>
-                <h5>Раздел вакансий</h5>
-                <p>Доступ с 18 лет</p>
-                <small>Ваш возраст: {{ user.age }}</small>
-            </div>
-            {% endif %}
-
-            <div class="cosmos-card">
-                <h4 class="mb-4">
-                    <i class="fas fa-info-circle text-danger me-2"></i>
-                    Как стать космонавтом?
-                </h4>
-
-                <ul class="timeline">
-                    <li>Высшее образование</li>
-                    <li>Опыт работы</li>
-                    <li>Подача заявки</li>
-                    <li>Медкомиссия</li>
-                    <li>Подготовка</li>
-                </ul>
-            </div>
-
         </div>
-
+        
     </div>
-
+    
 </div>
 {% endblock %}
