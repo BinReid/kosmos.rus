@@ -1,19 +1,76 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Hero секция для страницы подкастов -->
-<div class="hero" style="min-height: 40vh; padding: 60px 0 30px;">
-    <h1>Подкасты</h1>
-    <p>Эксклюзивные интервью, разборы космических программ и прямые включения из Роскосмоса</p>
-</div>
+<div class="podcast-container">
+    
+    <!-- Hero секция в стиле index.html -->
+    <div class="podcast-hero">
+        <h1>
+            <i class="fas fa-microphone-alt"></i>
+            Подкасты
+        </h1>
+        <p class="lead">
+            Эксклюзивные интервью, разборы космических программ и прямые включения из Роскосмоса<br>
+            Погрузитесь в мир космонавтики вместе с нашими экспертами
+        </p>
+    </div>
 
-<!-- Секция с видео-карточками -->
-<div class="content-sec">
-    <div class="container">
-        <div class="row g-4">
-            <!-- Видео 1 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="cosmos-card h-100">
+    <!-- Главный выпуск -->
+    <div class="featured-episode">
+        <div class="featured-badge">
+            <i class="fas fa-crown"></i> ГЛАВНЫЙ ВЫПУСК
+        </div>
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="featured-video-wrapper">
+                    <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
+                        <iframe 
+                            src="https://vkvideo.ru/video_ext.php?oid=-41859195&id=456242205&hd=4" 
+                            allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock" 
+                            frameborder="0" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="featured-info">
+                    <div class="episode-meta">
+                        <span class="meta-item"><i class="fas fa-calendar-alt"></i> Новый выпуск</span>
+                        <span class="meta-item"><i class="fas fa-clock"></i> 85 минут</span>
+                        <span class="meta-item"><i class="fas fa-eye"></i> 12.4K просмотров</span>
+                    </div>
+                    <h2>Интервью с главой "Роскосмоса"</h2>
+                    <p class="featured-description">
+                        В этом эксклюзивном выпуске мы обсуждаем будущее российской космонавтики, 
+                        планы по освоению Луны, развитие орбитальной станции и новые вызовы, 
+                        стоящие перед отраслью. Глава госкорпорации отвечает на самые острые вопросы 
+                        и делится инсайдами о предстоящих миссиях.
+                    </p>
+                    <div class="featured-tags">
+                        <span class="tag"><i class="fas fa-user-astronaut"></i> Интервью</span>
+                        <span class="tag"><i class="fas fa-rocket"></i> Роскосмос</span>
+                        <span class="tag"><i class="fas fa-moon"></i> Лунная программа</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Все выпуски -->
+    <div class="episodes-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                Все выпуски
+            </h3>
+            <div class="section-line"></div>
+        </div>
+        
+        <div class="episodes-grid">
+            <!-- Выпуск 1 -->
+            <div class="episode-card">
+                <div class="episode-number">01</div>
+                <div class="episode-thumbnail">
                     <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
                         <iframe 
                             src="https://vkvideo.ru/video_ext.php?oid=-211926408&id=456239093&hash=34c8302f03de5614&hd=4" 
@@ -22,19 +79,24 @@
                             allowfullscreen>
                         </iframe>
                     </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small class="text-muted" style="margin-left: 10px;"><i class="far fa-clock me-1"></i> 70 мин</small>
-                        </div>
-                        <h5 class="mb-2" style="margin-left: 10px;">Космические программы будущего</h5>
-                        <p class="small text-muted" style="margin-left: 10px;">Обсуждение планов по освоению дальнего космоса и новых технологий</p>
+                </div>
+                <div class="episode-content">
+                    <div class="episode-meta">
+                        <span><i class="far fa-clock"></i> 70 мин</span>
+                        <span><i class="fas fa-chart-line"></i> Просмотров: 8.2K</span>
+                    </div>
+                    <h3>Космические программы будущего</h3>
+                    <p>Обсуждение планов по освоению дальнего космоса, новых технологий и международного сотрудничества в космической отрасли.</p>
+                    <div class="episode-footer">
+                        <span class="duration-badge"><i class="fas fa-headphones"></i> Подкаст</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Видео 2 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="cosmos-card h-100">
+            <!-- Выпуск 2 -->
+            <div class="episode-card">
+                <div class="episode-number">02</div>
+                <div class="episode-thumbnail">
                     <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
                         <iframe 
                             src="https://vkvideo.ru/video_ext.php?oid=-211926408&id=456239075&hash=787a697b2dbba044&hd=4" 
@@ -43,19 +105,24 @@
                             allowfullscreen>
                         </iframe>
                     </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small class="text-muted" style="margin-left: 10px;"><i class="far fa-clock me-1"></i> 44 мин</small>
-                        </div>
-                        <h5 class="mb-2" style="margin-left: 10px;">История освоения космоса</h5>
-                        <p class="small text-muted" style="margin-left: 10px;">От первых спутников до современных орбитальных станций</p>
+                </div>
+                <div class="episode-content">
+                    <div class="episode-meta">
+                        <span><i class="far fa-clock"></i> 44 мин</span>
+                        <span><i class="fas fa-chart-line"></i> Просмотров: 6.7K</span>
+                    </div>
+                    <h3>История освоения космоса</h3>
+                    <p>От первых спутников до современных орбитальных станций. Увлекательное путешествие по вехам космической эры человечества.</p>
+                    <div class="episode-footer">
+                        <span class="duration-badge"><i class="fas fa-headphones"></i> Подкаст</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Видео 3 -->
-            <div class="col-lg-4 col-md-6">
-                <div class="cosmos-card h-100">
+            <!-- Выпуск 3 -->
+            <div class="episode-card">
+                <div class="episode-number">03</div>
+                <div class="episode-thumbnail">
                     <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
                         <iframe 
                             src="https://vkvideo.ru/video_ext.php?oid=-211926408&id=456239067&hash=e013219a90898d46&hd=4" 
@@ -64,12 +131,38 @@
                             allowfullscreen>
                         </iframe>
                     </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small class="text-muted" style="margin-left: 10px;"><i class="far fa-clock me-1"></i> 42 мин</small>
-                        </div>
-                        <h5 class="mb-2" style="margin-left: 10px;">Технологии ракетостроения</h5>
-                        <p class="small text-muted" style="margin-left: 10px;">Как создаются современные носители и двигатели для полётов</p>
+                </div>
+                <div class="episode-content">
+                    <div class="episode-meta">
+                        <span><i class="far fa-clock"></i> 42 мин</span>
+                        <span><i class="fas fa-chart-line"></i> Просмотров: 5.9K</span>
+                    </div>
+                    <h3>Технологии ракетостроения</h3>
+                    <p>Как создаются современные носители и двигатели для космических полётов. За кулисами производства ракетной техники.</p>
+                    <div class="episode-footer">
+                        <span class="duration-badge"><i class="fas fa-headphones"></i> Подкаст</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Выпуск 4 (дополнительный) -->
+            <div class="episode-card">
+                <div class="episode-number">04</div>
+                <div class="episode-thumbnail">
+                    <div class="thumbnail-placeholder">
+                        <i class="fas fa-satellite"></i>
+                        <span>Скоро</span>
+                    </div>
+                </div>
+                <div class="episode-content">
+                    <div class="episode-meta">
+                        <span><i class="far fa-clock"></i> ~50 мин</span>
+                        <span><i class="fas fa-calendar-week"></i> В разработке</span>
+                    </div>
+                    <h3>МКС: Жизнь на орбите</h3>
+                    <p>Как живут и работают космонавты на Международной космической станции. Быт, научные эксперименты и невесомость.</p>
+                    <div class="episode-footer">
+                        <span class="coming-soon">Скоро выйдет</span>
                     </div>
                 </div>
             </div>
