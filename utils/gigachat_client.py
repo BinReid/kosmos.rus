@@ -39,10 +39,7 @@ class GigaChatClient:
             self.client = None
     
     def summarize_text(self, text, news_id=None, max_sentences=4):
-        """
-        Сжатие текста с помощью GigaChat
-        news_id - ID новости для уникальности запроса
-        """
+        """Сжатие текста с помощью GigaChat"""
         if not self.client:
             self._init_client()
             if not self.client:
@@ -87,13 +84,6 @@ class GigaChatClient:
             
             # Извлекаем ответ
             summary = self._extract_response_content(response)
-            
-            # Проверяем, не вернулся ли старый ответ про Калининград
-            if summary and ("Калининград" in summary or "калининград" in summary 
-                          or "пограничники" in summary or "Белоруссии" in summary):
-                logger.warning("GigaChat returned cached/wrong response, using fallback")
-                # Принудительно используем fallback
-                return self._fallback_summary(text)
             
             # Проверяем релевантность: первые 50 символов оригинала должны пересекаться с ответом
             if summary and len(summary.strip()) > 10:

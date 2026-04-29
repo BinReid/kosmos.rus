@@ -1,4 +1,3 @@
-// star-welcome.js
 const starWelcome = {
     showWelcomeScreen(username) {
         return new Promise((resolve) => {

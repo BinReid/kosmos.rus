@@ -361,7 +361,6 @@ def achievement_delete(achievement_id):
     
     return redirect(url_for('admin.achievements'))
 
-
 # ============ Управление ВУЗами ============
 
 @admin_bp.route('/universities')

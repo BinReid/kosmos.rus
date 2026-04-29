@@ -294,15 +294,15 @@ class Project(db.Model):
     title = db.Column(db.String(200), nullable=False)
     short_description = db.Column(db.String(300), nullable=False)
     description_full = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(50), default='planned')  # planned, active, completed, paused
+    status = db.Column(db.String(50), default='planned') 
     status_name = db.Column(db.String(100), default='В плане')
     mission_type = db.Column(db.String(100), nullable=False)
     year = db.Column(db.String(20), nullable=False)
     image_data = db.Column(db.Text, nullable=True)
     image_mime = db.Column(db.String(50), nullable=True)
-    goals = db.Column(db.Text, nullable=True)  # JSON array
-    partners = db.Column(db.Text, nullable=True)  # JSON array
-    updates = db.Column(db.Text, nullable=True)  # JSON array of {date, text}
+    goals = db.Column(db.Text, nullable=True)  
+    partners = db.Column(db.Text, nullable=True)  
+    updates = db.Column(db.Text, nullable=True) 
     sort_order = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

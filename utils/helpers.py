@@ -4,10 +4,7 @@ from datetime import datetime, date
 import re
 
 def image_to_base64(file_data):
-    """
-    Конвертирует файл изображения в base64 строку
-    Возвращает tuple (base64_data, mime_type)
-    """
+    """Конвертирует файл изображения в base64 строку"""
     if not file_data:
         return None, None
     
